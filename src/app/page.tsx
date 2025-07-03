@@ -16,7 +16,7 @@ export default function Home() {
   }
 
   return (
-    <div className='flex justify-center items-center min-h-screen p-4 bg-black text-white'>
+    <div className='flex flex-col justify-center items-center gap-4 min-h-screen p-4 bg-black text-white'>
       <Suspense fallback={null}>
         <ErrorDisplay />
       </Suspense>
