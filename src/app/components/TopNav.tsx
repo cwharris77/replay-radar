@@ -24,26 +24,29 @@ const TopNav = () => {
         />
         Replay Radar
       </Link>
-      <div className='gap-x-4 flex items-center'>
-        <Link
-          href='/pages/artists'
-          className='text-2xl text-gray-300 hover:text-white'
-        >
-          Artists
-        </Link>
-        <Link
-          href='/pages/tracks'
-          className='text-2xl text-gray-300 hover:text-white'
-        >
-          Tracks
-        </Link>
+      <div className='flex items-center gap-x-4'>
         {isAuthenticated && (
-          <Link
-            href='/pages/about'
-            className='text-2xl text-gray-300 hover:text-white'
-          >
-            About
-          </Link>
+          <div className='gap-x-4 flex items-center'>
+            <Link
+              href='/pages/artists'
+              className='text-2xl text-gray-300 hover:text-white'
+            >
+              Artists
+            </Link>
+            <Link
+              href='/pages/tracks'
+              className='text-2xl text-gray-300 hover:text-white'
+            >
+              Tracks
+            </Link>
+
+            <Link
+              href='/pages/about'
+              className='text-2xl text-gray-300 hover:text-white'
+            >
+              About
+            </Link>
+          </div>
         )}
         {!isAuthenticated ? <Login /> : <Logout />}
       </div>
