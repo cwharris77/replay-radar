@@ -4,9 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "../hooks/useAuth";
 import Login from "./Login";
+import Logout from "./Logout";
 
 const TopNav = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <nav className='flex items-center justify-between w-full p-4'>
@@ -23,10 +24,15 @@ const TopNav = () => {
         />
         Replay Radar
       </Link>
-      <Link href='/artists' className='text-lg text-gray-300 hover:text-white'>
-        Artists
-      </Link>
-      {!isAuthenticated && !isLoading && <Login />}
+      <div className='gap-x-4 flex items-center'>
+        <Link
+          href='/artists'
+          className='text-2xl text-gray-300 hover:text-white'
+        >
+          Artists
+        </Link>
+        {!isAuthenticated ? <Login /> : <Logout />}
+      </div>
     </nav>
   );
 };

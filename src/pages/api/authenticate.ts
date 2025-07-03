@@ -1,13 +1,14 @@
-import cookie from "cookie";
+import * as cookie from "cookie";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export async function authenticate(
   req: NextApiRequest,
   res?: NextApiResponse
 ): Promise<string | null> {
-  const cookies = cookie.parse(req.headers.cookie || "");
-  const accessToken = cookies.spotify_access_token;
-  const refreshToken = cookies.spotify_refresh_token;
+  const accessToken = req.cookies.spotify_access_token;
+  const refreshToken = req.cookies.spotify_refresh_token;
+  console.log("Access Token:", accessToken);
+  console.log("Refresh Token:", refreshToken);
 
   if (!accessToken && refreshToken && res) {
     return await refreshAndReturnToken(refreshToken, res);
@@ -86,11 +87,24 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const accessToken = await authenticate(req, res);
+  const accessToken = req.cookies.spotify_access_token;
 
   if (accessToken) {
-    res.status(200).json({ authenticated: true });
-  } else {
-    res.status(401).json({ authenticated: false });
+    try {
+      const meRes = await fetch("https://api.spotify.com/v1/me", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (meRes.ok) {
+        res.status(200).json({ authenticated: true });
+        return;
+      }
+    } catch (error) {
+      console.error("Token validation error:", error);
+    }
   }
+
+  res.status(401).json({ authenticated: false });
 }

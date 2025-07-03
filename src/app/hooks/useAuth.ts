@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -16,11 +17,16 @@ export function useAuth() {
         if (response.ok) {
           const data = await response.json();
           setIsAuthenticated(data.authenticated === true);
+          setAuthError(null);
         } else {
           setIsAuthenticated(false);
+          if (response.status === 401) {
+            setAuthError("Please log in to access your Spotify data");
+          }
         }
       } catch {
         setIsAuthenticated(false);
+        setAuthError("Unable to verify authentication status");
       } finally {
         setIsLoading(false);
       }
@@ -33,21 +39,53 @@ export function useAuth() {
     window.location.href = "/api/login";
   };
 
-  const logout = () => {
-    // Clear cookies
-    document.cookie =
-      "spotify_access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie =
-      "spotify_refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  const logout = async () => {
+    try {
+      // Call the logout API to revoke tokens and clear cookies
+      await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
 
-    setIsAuthenticated(false);
+      // Clear any browser cache/storage
+      if ("caches" in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(
+          cacheNames.map((cacheName) => caches.delete(cacheName))
+        );
+      }
 
-    window.location.href = "/";
+      localStorage.clear();
+      sessionStorage.clear();
+
+      setIsAuthenticated(false);
+
+      window.location.replace("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+
+      if ("caches" in window) {
+        try {
+          const cacheNames = await caches.keys();
+          await Promise.all(
+            cacheNames.map((cacheName) => caches.delete(cacheName))
+          );
+        } catch (cacheError) {
+          console.error("Cache clear error:", cacheError);
+        }
+      }
+
+      localStorage.clear();
+      sessionStorage.clear();
+      setIsAuthenticated(false);
+      window.location.replace("/");
+    }
   };
 
   return {
     isAuthenticated,
     isLoading,
+    authError,
     login,
     logout,
   };
