@@ -37,6 +37,14 @@ const TopNav = () => {
         >
           Tracks
         </Link>
+        {isAuthenticated && (
+          <Link
+            href='/pages/about'
+            className='text-2xl text-gray-300 hover:text-white'
+          >
+            About
+          </Link>
+        )}
         {!isAuthenticated ? <Login /> : <Logout />}
       </div>
     </nav>

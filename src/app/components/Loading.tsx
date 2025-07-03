@@ -1,5 +1,5 @@
 interface LoadingProps {
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
   text?: string;
 }
 
@@ -11,6 +11,8 @@ export default function Loading({
     sm: "w-1 h-4",
     md: "w-1 h-6",
     lg: "w-2 h-8",
+    xl: "w-2 h-10",
+    "2xl": "w-3 h-12",
   };
 
   return (
