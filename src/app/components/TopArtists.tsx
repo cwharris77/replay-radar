@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { timeRange } from "../constants";
 import { useFetchSpotifyData } from "../hooks/useFetchSpotifyData";
 import ErrorCard from "./ErrorCard";
 import Loading from "./Loading";
@@ -18,7 +19,7 @@ interface SpotifyArtistsResponse {
 
 export default function TopArtists() {
   const { data, loading, error } = useFetchSpotifyData<SpotifyArtistsResponse>(
-    "/api/topArtists",
+    `/api/fetchTopData?endpoint=artists&limit=10&time_range=${timeRange.long}`,
     "spotify_top_artists",
     5 * 60 * 1000 // 5 minutes cache
   );

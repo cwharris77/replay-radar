@@ -1,4 +1,4 @@
-import TopArtists from "../components/TopArtists";
+import TopArtists from "../../components/TopArtists";
 
 export default function TopArtistsPage() {
   return (

@@ -7,8 +7,6 @@ export async function authenticate(
 ): Promise<string | null> {
   const accessToken = req.cookies.spotify_access_token;
   const refreshToken = req.cookies.spotify_refresh_token;
-  console.log("Access Token:", accessToken);
-  console.log("Refresh Token:", refreshToken);
 
   if (!accessToken && refreshToken && res) {
     return await refreshAndReturnToken(refreshToken, res);
@@ -90,6 +88,7 @@ export default async function handler(
   const accessToken = req.cookies.spotify_access_token;
 
   if (accessToken) {
+    // Just validate the existing token without refreshing
     try {
       const meRes = await fetch("https://api.spotify.com/v1/me", {
         headers: {
@@ -106,5 +105,6 @@ export default async function handler(
     }
   }
 
+  // If no valid token don't auto-refresh for auth checks
   res.status(401).json({ authenticated: false });
 }

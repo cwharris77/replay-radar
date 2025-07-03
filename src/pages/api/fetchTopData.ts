@@ -1,7 +1,8 @@
+import { timeRange } from "@/app/constants";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { authenticate } from "./authenticate";
 
-export default async function handler(
+export default async function fetchTopData(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -12,9 +13,10 @@ export default async function handler(
     return;
   }
 
+  const { endpoint, limit = "20", time_range = timeRange.long } = req.query;
+
   const response = await fetch(
-    // todo: update so user can select number of artists/time range
-    "https://api.spotify.com/v1/me/top/artists?limit=20&time_range=long_term",
+    `https://api.spotify.com/v1/me/top/${endpoint}?limit=${limit}&time_range=${time_range}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -30,6 +32,5 @@ export default async function handler(
   }
 
   const data = await response.json();
-
   res.status(200).json(data);
 }

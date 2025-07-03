@@ -26,10 +26,16 @@ const TopNav = () => {
       </Link>
       <div className='gap-x-4 flex items-center'>
         <Link
-          href='/artists'
+          href='/pages/artists'
           className='text-2xl text-gray-300 hover:text-white'
         >
           Artists
+        </Link>
+        <Link
+          href='/pages/tracks'
+          className='text-2xl text-gray-300 hover:text-white'
+        >
+          Tracks
         </Link>
         {!isAuthenticated ? <Login /> : <Logout />}
       </div>
