@@ -27,6 +27,7 @@ export default function RootLayout({
     <html lang='en'>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning={true} // extensions modify the body tag after server renders but before hydration
       >
         <TopNav />
         {children}
