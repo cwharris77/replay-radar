@@ -1,17 +1,11 @@
 "use client";
 
+import { Artist } from "@/types";
 import Image from "next/image";
 import { timeRange } from "../constants";
 import { useFetchSpotifyData } from "../hooks/useFetchSpotifyData";
 import ErrorCard from "./ErrorCard";
 import Loading from "./Loading";
-
-interface Artist {
-  id: string;
-  name: string;
-  images: { url: string }[];
-  external_urls: { spotify: string };
-}
 
 interface SpotifyArtistsResponse {
   items: Artist[];

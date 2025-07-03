@@ -1,42 +1,11 @@
 "use client";
 
+import { Track } from "@/types";
 import Image from "next/image";
 import { timeRange } from "../constants";
 import { useFetchSpotifyData } from "../hooks/useFetchSpotifyData";
 import ErrorCard from "./ErrorCard";
 import Loading from "./Loading";
-
-interface Track {
-  id: string;
-  name: string;
-  duration_ms: number;
-  explicit: boolean;
-  popularity: number;
-  preview_url: string | null;
-  external_urls: {
-    spotify: string;
-  };
-  artists: {
-    id: string;
-    name: string;
-    external_urls: {
-      spotify: string;
-    };
-  }[];
-  album: {
-    id: string;
-    name: string;
-    release_date: string;
-    external_urls: {
-      spotify: string;
-    };
-    images: {
-      url: string;
-      height: number;
-      width: number;
-    }[];
-  };
-}
 
 interface SpotifyTracksResponse {
   items: Track[];
