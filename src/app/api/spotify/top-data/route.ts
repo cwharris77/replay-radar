@@ -1,7 +1,7 @@
 import { Artist, Track } from "@/types";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/authOptions";
 
 type SpotifyDataType = "artists" | "tracks";
 type TimeRange = "short_term" | "medium_term" | "long_term";
