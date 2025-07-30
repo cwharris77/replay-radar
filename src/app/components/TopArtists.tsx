@@ -2,31 +2,22 @@
 
 import { Artist } from "@/types";
 import Image from "next/image";
-import { timeRange } from "../constants";
-import { useFetchSpotifyData } from "../hooks/useFetchSpotifyData";
+import { useNextAuth } from "../hooks/useNextAuth";
 import ErrorCard from "./ErrorCard";
 import Loading from "./Loading";
 
-interface SpotifyArtistsResponse {
-  items: Artist[];
-}
-
 export default function TopArtists() {
-  const { data, loading, error } = useFetchSpotifyData<SpotifyArtistsResponse>(
-    `/api/fetchTopData?endpoint=artists&limit=10&time_range=${timeRange.long}`,
-    "spotify_top_artists",
-    5 * 60 * 1000 // 5 minutes cache
-  );
+  const { topArtists, isLoading, authError } = useNextAuth();
 
-  if (loading) {
+  if (isLoading) {
     return <Loading size='md' text='Loading your top artists...' />;
   }
 
-  if (error) {
-    return <ErrorCard message={error.message} />;
+  if (authError) {
+    return <ErrorCard message={authError} />;
   }
 
-  const artists = data?.items || [];
+  const artists: Artist[] = topArtists || [];
 
   return (
     <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>

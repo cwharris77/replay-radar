@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "../hooks/useAuth";
+import { useNextAuth } from "../hooks/useNextAuth";
 import Login from "./Login";
 import Logout from "./Logout";
 
 const TopNav = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useNextAuth();
 
   return (
     <nav className='flex items-center justify-between w-full p-4'>

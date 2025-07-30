@@ -5,12 +5,22 @@ import About from "./components/About";
 import DashboardSummary from "./components/DashboardSummary";
 import ErrorDisplay from "./components/ErrorDisplay";
 import Loading from "./components/Loading";
-import { useAuth } from "./hooks/useAuth";
+import { useNextAuth } from "./hooks/useNextAuth";
+import { createDefaultArtist } from "./utils/defaults";
 
 export default function Home() {
-  const { isAuthenticated, isLoading } = useAuth();
-  const topArtist = { name: "Taylor Swift" } as Artist;
-  const totalMinutes = 12345;
+  const { isAuthenticated, isLoading, topArtists, topTracks } = useNextAuth();
+
+  const topArtist: Artist = topArtists[0] || createDefaultArtist();
+
+  const totalMinutes =
+    topTracks.length > 0
+      ? Math.round(
+          topTracks.reduce((acc, track) => acc + (track.duration_ms || 0), 0) /
+            60000
+        )
+      : 0;
+
   const trendData = [5, 10, 8, 15, 12, 20, 18, 25, 22];
 
   if (isLoading) {

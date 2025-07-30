@@ -2,31 +2,22 @@
 
 import { Track } from "@/types";
 import Image from "next/image";
-import { timeRange } from "../constants";
-import { useFetchSpotifyData } from "../hooks/useFetchSpotifyData";
+import { useNextAuth } from "../hooks/useNextAuth";
 import ErrorCard from "./ErrorCard";
 import Loading from "./Loading";
 
-interface SpotifyTracksResponse {
-  items: Track[];
-}
-
 export default function TopTracks() {
-  const { data, loading, error } = useFetchSpotifyData<SpotifyTracksResponse>(
-    `/api/fetchTopData?endpoint=tracks&limit=10&time_range=${timeRange.long}`,
-    "spotify_top_tracks",
-    5 * 60 * 1000 // 5 minutes cache
-  );
+  const { topTracks, isLoading, authError } = useNextAuth();
 
-  if (loading) {
+  if (isLoading) {
     return <Loading size='md' text='Loading your top tracks...' />;
   }
 
-  if (error) {
-    return <ErrorCard message={error.message} />;
+  if (authError) {
+    return <ErrorCard message={authError} />;
   }
 
-  const tracks = data?.items || [];
+  const tracks: Track[] = topTracks || [];
 
   return (
     <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>

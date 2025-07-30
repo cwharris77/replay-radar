@@ -1,9 +1,9 @@
 "use client";
 
-import { useAuth } from "../hooks/useAuth";
+import { useNextAuth } from "../hooks/useNextAuth";
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login } = useNextAuth();
   return (
     <button
       onClick={login}

@@ -1,7 +1,7 @@
-import { useAuth } from "../hooks/useAuth";
+import { useNextAuth } from "../hooks/useNextAuth";
 
 export const Logout = () => {
-  const { logout } = useAuth();
+  const { logout } = useNextAuth();
 
   return (
     <button

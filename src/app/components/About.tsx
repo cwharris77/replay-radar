@@ -1,10 +1,10 @@
 "use client";
-import { useAuth } from "../hooks/useAuth";
+import { useNextAuth } from "../hooks/useNextAuth";
 import Loading from "./Loading";
 import Login from "./Login";
 
 export default function About() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useNextAuth();
 
   if (isLoading) {
     return (
