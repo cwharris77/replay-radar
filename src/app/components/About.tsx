@@ -65,17 +65,9 @@ export default function About() {
         </ol>
       </section>
 
-      {/* Mockup/Preview Section */}
-      <section className='my-12'>
-        {/* Replace with a real image or component if you want */}
-        <div className='bg-gray-800 rounded-2xl w-full max-w-xl h-64 flex items-center justify-center text-gray-500'>
-          [ Demo preview image or chart goes here ]
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className='text-gray-600 text-sm mt-12 mb-4'>
-        © {new Date().getFullYear()} Replay Radar • Made with ❤️
+        © {new Date().getFullYear()} Replay Radar
       </footer>
     </div>
   );

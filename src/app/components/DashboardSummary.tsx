@@ -62,7 +62,7 @@ export default function DashboardSummary({
         whileHover={{ scale: 1.05 }}
         className='p-6 rounded-2xl bg-gradient-to-br from-pink-500 to-pink-700 shadow-lg text-white flex items-center justify-center'
       >
-        <Link href='/artists' className='font-bold text-lg'>
+        <Link href='/pages/artists' className='font-bold text-lg'>
           View Top Artists
         </Link>
       </motion.div>
