@@ -1,11 +1,9 @@
-import { useNextAuth } from "../hooks/useNextAuth";
+import { signOut } from "next-auth/react";
 
 export const Logout = () => {
-  const { logout } = useNextAuth();
-
   return (
     <button
-      onClick={logout}
+      onClick={() => signOut({ callbackUrl: "/" })}
       className='p-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition'
     >
       Logout

@@ -1,12 +1,10 @@
 "use client";
-
-import { useNextAuth } from "../hooks/useNextAuth";
+import { signIn } from "next-auth/react";
 
 const Login = () => {
-  const { login } = useNextAuth();
   return (
     <button
-      onClick={login}
+      onClick={() => signIn("spotify")}
       className='p-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition'
     >
       Login with Spotify

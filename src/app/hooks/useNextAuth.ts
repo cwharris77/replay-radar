@@ -20,7 +20,7 @@ export function useNextAuth() {
     type: "artists" | "tracks",
     timeRange: string = "short_term"
   ) => {
-    if (!session?.accessToken) return;
+    if (!session?.user?.accessToken) return;
 
     try {
       setLoading(true);
@@ -85,7 +85,7 @@ export function useNextAuth() {
   };
 
   useEffect(() => {
-    if (session?.accessToken) {
+    if (session?.user?.accessToken) {
       fetchSpotifyData("artists");
       fetchSpotifyData("tracks");
     }
