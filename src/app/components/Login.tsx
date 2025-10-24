@@ -1,14 +1,13 @@
 "use client";
+
 import { signIn } from "next-auth/react";
+import { Button } from "./ui";
 
 const Login = () => {
   return (
-    <button
-      onClick={() => signIn("spotify")}
-      className='p-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition'
-    >
+    <Button onClick={() => signIn("spotify")} variant='primary'>
       Login with Spotify
-    </button>
+    </Button>
   );
 };
 
