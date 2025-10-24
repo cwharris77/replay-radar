@@ -1,17 +1,12 @@
 "use client";
 
+import { TIME_RANGES } from "@/app/constants";
 import TiltedCard from "@/components/TiltedCard";
 import { Artist } from "@/types";
 import { useState } from "react";
 import { useNextAuth } from "../hooks/useNextAuth";
 import ErrorCard from "./ErrorCard";
 import Loading from "./Loading";
-
-const TIME_RANGES = [
-  { label: "This Week", value: "short_term" },
-  { label: "Last 6 Months", value: "medium_term" },
-  { label: "All Time", value: "long_term" },
-];
 
 export default function TopArtists() {
   const { topArtists, isLoading, authError, fetchSpotifyData } = useNextAuth();
@@ -31,24 +26,25 @@ export default function TopArtists() {
   }
 
   const artists: Artist[] = topArtists || [];
+
   return (
-    <div>
-      <div className='flex flex-wrap gap-3 mb-6 justify-center px-4'>
+    <div className='max-w-full mx-auto'>
+      <div className='flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6 justify-center px-2 sm:px-4'>
         {TIME_RANGES.map((range) => (
           <button
             key={range.value}
             onClick={() => handleRangeChange(range.value)}
-            className={`px-6 py-3 rounded-lg font-semibold transition border border-gray-700 text-base sm:text-sm touch-target-auto ${
+            className={`min-w-[90px] px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-medium sm:font-semibold transition-all duration-200 border border-gray-700 text-sm sm:text-base ${
               selectedRange === range.value
-                ? "bg-green-600 text-white"
-                : "bg-gray-800 text-gray-300 active:bg-green-700 hover:bg-green-700"
+                ? "bg-green-600 text-white shadow-lg"
+                : "bg-gray-800 text-gray-300 active:bg-green-700 hover:bg-green-700 active:scale-95"
             }`}
           >
             {range.label}
           </button>
         ))}
       </div>
-      <div className='grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 md:gap-9 px-4 sm:px-6'>
+      <div className='default-card-grid'>
         {artists.map((artist) => (
           <TiltedCard
             altText={artist.name}
