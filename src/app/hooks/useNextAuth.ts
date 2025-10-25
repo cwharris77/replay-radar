@@ -15,6 +15,7 @@ export function useNextAuth() {
   const [topTracks, setTopTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [recentlyPlayed, setRecentlyPlayed] = useState<Track[]>([]);
 
   const fetchSpotifyData = async (
     type: "artists" | "tracks",
@@ -46,6 +47,30 @@ export function useNextAuth() {
         const tracks = data.items.filter(isTrack);
         setTopTracks(tracks);
       }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchRecentlyPlayed = async () => {
+    if (!session?.user?.accessToken) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch("/api/spotify/recently-played", {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch recently played tracks");
+      }
+
+      const tracks: Track[] = await response.json();
+      setRecentlyPlayed(tracks.filter(isTrack));
+      setRecentlyPlayed(tracks);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -88,6 +113,7 @@ export function useNextAuth() {
     if (session?.user?.accessToken) {
       fetchSpotifyData("artists");
       fetchSpotifyData("tracks");
+      fetchRecentlyPlayed();
     }
   }, [session]);
 
@@ -102,5 +128,6 @@ export function useNextAuth() {
     login,
     logout,
     fetchSpotifyData,
+    recentlyPlayed,
   };
 }

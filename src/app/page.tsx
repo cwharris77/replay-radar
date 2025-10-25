@@ -9,7 +9,8 @@ import { useNextAuth } from "./hooks/useNextAuth";
 import { createDefaultArtist } from "./utils/defaults";
 
 export default function Home() {
-  const { isAuthenticated, isLoading, topArtists, topTracks } = useNextAuth();
+  const { isAuthenticated, isLoading, topArtists, topTracks, recentlyPlayed } =
+    useNextAuth();
 
   const topArtist: Artist = topArtists[0] || createDefaultArtist();
 
@@ -41,8 +42,10 @@ export default function Home() {
       ) : (
         <DashboardSummary
           topArtist={topArtist}
+          topTracks={topTracks}
           totalMinutes={totalMinutes}
           trendData={trendData}
+          recentlyPlayed={recentlyPlayed}
         />
       )}
     </div>

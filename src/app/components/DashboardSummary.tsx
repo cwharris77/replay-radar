@@ -1,71 +1,96 @@
-import { Artist } from "@/types";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { Sparklines, SparklinesLine } from "react-sparklines";
+import MagicBento, { BentoCardProps } from "@/components/MagicBento";
+import { Artist, Track } from "@/types";
 
 interface DashboardSummaryProps {
   topArtist: Artist;
+  topTracks?: Track[];
   totalMinutes: number;
   trendData: number[];
+  recentlyPlayed?: Track[];
 }
+
+const generateCardData = (
+  topArtist: Artist,
+  topTracks: Track[] = [],
+  totalMinutes: number,
+  recentlyPlayed?: Track[]
+): BentoCardProps[] => [
+  {
+    color: "#060010",
+    title: topTracks[0]?.name || "No tracks yet",
+    description: `Artist: ${topTracks[0]?.artists[0]?.name || "Unknown"}`,
+    label: "Top Track",
+  },
+  {
+    color: "#060010",
+    title: topArtist.name,
+    description: "Your most played artist",
+    label: "Top Artist",
+  },
+  {
+    color: "#060010",
+    title:
+      topTracks
+        .slice(1, 3)
+        .map(
+          (track, index) =>
+            `${index + 2}. ${track.name} by ${track.artists[0]?.name}`
+        )
+        .join("\n") || "No tracks yet",
+    description: "Your favorite songs",
+    label: "Top Tracks",
+  },
+  {
+    color: "#060010",
+    title:
+      recentlyPlayed
+        ?.slice(0, 3)
+        .map(
+          (track, index) =>
+            `${index + 1}. ${track.name} by ${track.artists[0]?.name}`
+        )
+        .join("\n") || "No recently played tracks",
+    description: "Recently played",
+    label: "History",
+  },
+  {
+    color: "#060010",
+    title: `${totalMinutes.toLocaleString()} minutes`,
+    description: "Listening Time Today",
+    label: "Stats",
+  },
+  {
+    color: "#060010",
+    title: "Top Genres",
+    description: "Explore your music taste",
+    label: "Genres",
+  },
+];
 
 export default function DashboardSummary({
   topArtist,
   totalMinutes,
-  trendData,
+  topTracks,
+  recentlyPlayed,
 }: DashboardSummaryProps) {
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-      {/* Top Artist Stat */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className='p-6 rounded-2xl bg-gradient-to-br from-green-500 to-green-700 shadow-lg text-white'
-      >
-        <p className='text-sm text-white/80 mb-1'>Top Artist This Year</p>
-        <p className='text-2xl font-bold'>{topArtist.name || "N/A"}</p>
-      </motion.div>
-
-      {/* Total Minutes Stat */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className='p-6 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-700 shadow-lg text-white'
-      >
-        <p className='text-sm text-white/80 mb-1'>Total Minutes Listened</p>
-        <p className='text-2xl font-bold'>{totalMinutes.toLocaleString()}</p>
-      </motion.div>
-
-      {/* Recent Trend Sparkline */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-        className='p-6 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-lg text-white'
-      >
-        <p className='text-sm text-white/80 mb-2'>Recent Listening Trend</p>
-        <Sparklines
-          data={trendData}
-          limit={20}
-          width={100}
-          height={30}
-          margin={5}
-        >
-          <SparklinesLine color='white' style={{ fill: "none" }} />
-        </Sparklines>
-      </motion.div>
-
-      {/* View Top Artists Card Link */}
-      <motion.div
-        whileHover={{ scale: 1.05 }}
-        className='p-6 rounded-2xl bg-gradient-to-br from-pink-500 to-pink-700 shadow-lg text-white flex items-center justify-center'
-      >
-        <Link href='/pages/artists' className='font-bold text-lg'>
-          View Top Artists
-        </Link>
-      </motion.div>
-    </div>
+    <MagicBento
+      textAutoHide={false}
+      enableStars={false}
+      enableSpotlight={true}
+      enableBorderGlow={true}
+      enableTilt={false}
+      enableMagnetism={true}
+      clickEffect={true}
+      spotlightRadius={300}
+      particleCount={12}
+      glowColor='var(--color-primary-rgb)'
+      cardData={generateCardData(
+        topArtist,
+        topTracks,
+        totalMinutes,
+        recentlyPlayed
+      )}
+    />
   );
 }

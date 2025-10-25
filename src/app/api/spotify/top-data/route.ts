@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
 
     let accessToken = session.user.accessToken;
 
-    // 1️⃣ Check if token expired
+    //Check if token expired
     const now = Date.now();
     if (session.user.expiresAt && session.user.expiresAt < now) {
       try {

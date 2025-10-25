@@ -4,16 +4,23 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Primary */
+  /* Primary Colors - Both HEX and RGB formats */
   --color-primary: #1db954;
+  --color-primary-rgb: 29, 185, 84;
   --color-primary-dark: #1aa34a;
+  --color-primary-dark-rgb: 26, 163, 74;
   --color-primary-light: #1ed760;
+  --color-primary-light-rgb: 30, 215, 96;
 
-  /* Backgrounds / Neutrals */
+  /* Backgrounds / Neutrals - Both HEX and RGB formats */
   --color-background: #191414;
+  --color-background-rgb: 25, 20, 20;
   --color-card: #282828;
+  --color-card-rgb: 40, 40, 40;
   --color-foreground: #000000;
+  --color-foreground-rgb: 0, 0, 0;
   --color-muted: #b3b3b3;
+  --color-muted-rgb: 179, 179, 179;
 
   /* Accents */
   --color-pink: #f03e8c;
