@@ -21,6 +21,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
+      session.user.id = token.sub as string;
       session.user.accessToken = token.accessToken as string | undefined;
       session.user.refreshToken = token.refreshToken as string | undefined;
       session.user.expiresAt = token.expiresAt as number | undefined;
@@ -30,7 +31,7 @@ export const authOptions: NextAuthOptions = {
   events: {
     async signIn({ user, account }) {
       const client = await clientPromise;
-      const db = client.db("replay-radar");
+      const db = client.db(process.env.MONGO_DB_NAME);
       const users = db.collection("users");
 
       await users.updateOne(
@@ -39,7 +40,6 @@ export const authOptions: NextAuthOptions = {
           $set: {
             userId: user.id,
             name: user.name,
-            email: user.email,
             accessToken: account?.access_token,
             refreshToken: account?.refresh_token,
             joinedAt: new Date(),

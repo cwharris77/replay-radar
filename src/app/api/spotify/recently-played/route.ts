@@ -1,4 +1,5 @@
 import { authOptions } from "@/auth/authOptions";
+import { SpotifyCache } from "@/lib/models/SpotifyCache";
 import { refreshSpotifyToken } from "@/lib/spotify";
 import { Track } from "@/types";
 import { Session } from "next-auth";
@@ -21,6 +22,15 @@ export async function GET() {
         { error: "Authentication required" },
         { status: 401 }
       );
+    }
+
+    const userId = session.user.id;
+
+    // Check cache first
+    const cachedData = await SpotifyCache.getCache(userId, "recently-played");
+
+    if (cachedData) {
+      return NextResponse.json(cachedData.data);
     }
 
     let accessToken = session.user.accessToken;
@@ -77,6 +87,9 @@ export async function GET() {
       ...item.track,
       played_at: item.played_at,
     }));
+
+    // Cache the transformed data
+    await SpotifyCache.setCache(userId, "recently-played", recentTracks);
 
     return NextResponse.json(recentTracks);
   } catch (error) {
