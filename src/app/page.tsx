@@ -14,11 +14,15 @@ export default function Home() {
 
   const topArtist: Artist = topArtists[0] || createDefaultArtist();
 
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0); // sets time to 00:00:00
+  console.log(recentlyPlayed);
   const totalMinutes =
-    topTracks.length > 0
+    recentlyPlayed.length > 0
       ? Math.round(
-          topTracks.reduce((acc, track) => acc + (track.duration_ms || 0), 0) /
-            60000
+          recentlyPlayed
+            .filter((track) => new Date(track.played_at) >= startOfToday) // Transform played_at to Date for local time comparison
+            .reduce((acc, track) => acc + (track.duration_ms || 0), 0) / 60000
         )
       : 0;
 
