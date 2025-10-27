@@ -1,9 +1,7 @@
-import { authOptions } from "@/auth/authOptions";
+import { requireSession } from "@/lib/auth";
 import { SpotifyCache } from "@/lib/models/SpotifyCache";
 import { refreshSpotifyToken } from "@/lib/spotify";
 import { Track } from "@/types";
-import { Session } from "next-auth";
-import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 
 interface SpotifyRecentlyPlayedResponse {
@@ -15,14 +13,9 @@ interface SpotifyRecentlyPlayedResponse {
 
 export async function GET() {
   try {
-    const session = (await getServerSession(authOptions)) as Session | null;
+    const session = await requireSession();
 
-    if (!session?.user?.accessToken || !session.user.refreshToken) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      );
-    }
+    if (session instanceof NextResponse) return session;
 
     const userId = session.user.id;
 
@@ -39,7 +32,7 @@ export async function GET() {
     const now = Date.now();
     if (session.user.expiresAt && session.user.expiresAt < now) {
       const refreshedTokenResponse = await refreshSpotifyToken(
-        session.user.refreshToken
+        session.user.refreshToken || ""
       );
       if (!refreshedTokenResponse || !refreshedTokenResponse.access_token) {
         return NextResponse.json(
