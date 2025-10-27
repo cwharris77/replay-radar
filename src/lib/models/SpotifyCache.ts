@@ -41,7 +41,7 @@ export class SpotifyCache {
     const client = await clientPromise;
     const collection = client
       .db(process.env.MONGO_DB_NAME)
-      .collection("spotifycaches");
+      .collection("top-data-cache");
 
     const cache = await collection.findOne<CachedData>({
       userId,
@@ -82,7 +82,7 @@ export class SpotifyCache {
       const client = await clientPromise;
       const collection = client
         .db(process.env.MONGO_DB_NAME)
-        .collection("spotifycaches");
+        .collection("top-data-cache");
 
       const cacheData: CachedData = {
         userId,
@@ -112,7 +112,7 @@ export class SpotifyCache {
     const client = await clientPromise;
     const collection = client
       .db(process.env.MONGO_DB_NAME)
-      .collection("spotifycaches");
+      .collection("top-data-cache");
     await collection.deleteMany({ userId });
   }
 }

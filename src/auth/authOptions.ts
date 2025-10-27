@@ -33,6 +33,9 @@ export const authOptions: NextAuthOptions = {
       const client = await clientPromise;
       const db = client.db(process.env.MONGO_DB_NAME);
       const users = db.collection("users");
+      const expiresAt = account?.expires_at
+        ? Date.now() + account.expires_at * 1000
+        : Date.now();
 
       await users.updateOne(
         { userId: user.id },
@@ -42,6 +45,7 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             accessToken: account?.access_token,
             refreshToken: account?.refresh_token,
+            expiresAt: expiresAt,
             joinedAt: new Date(),
           },
         },
