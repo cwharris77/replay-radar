@@ -21,7 +21,10 @@ export default function Home() {
     recentlyPlayed.length > 0
       ? Math.round(
           recentlyPlayed
-            .filter((track) => new Date(track.played_at) >= startOfToday) // Transform played_at to Date for local time comparison
+            .filter(
+              (track) =>
+                track.played_at && new Date(track.played_at) >= startOfToday
+            ) // Transform played_at to Date for local time comparison
             .reduce((acc, track) => acc + (track.duration_ms || 0), 0) / 60000
         )
       : 0;
