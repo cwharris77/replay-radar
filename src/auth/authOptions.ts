@@ -1,4 +1,4 @@
-import clientPromise from "@/lib/mongodb";
+import { getUserCollection, SpotifyTokens } from "@/lib/models/User";
 import { NextAuthOptions } from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 
@@ -30,23 +30,32 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     async signIn({ user, account }) {
-      const client = await clientPromise;
-      const db = client.db(process.env.MONGO_DB_NAME);
-      const users = db.collection("users");
-      const expiresAt = account?.expires_at
+      if (!account) return;
+
+      const users = await getUserCollection();
+
+      // Calculate token expiration
+      const expiresAt = account.expires_at
         ? Date.now() + account.expires_at * 1000
-        : Date.now();
+        : Date.now() + 3600 * 1000; // fallback 1 hour
+
+      const spotify: SpotifyTokens = {
+        accessToken: account.access_token || "",
+        refreshToken: account.refresh_token || "",
+        expiresAt,
+      };
 
       await users.updateOne(
-        { userId: user.id },
+        { _id: user.id },
         {
           $set: {
-            userId: user.id,
-            name: user.name,
-            accessToken: account?.access_token,
-            refreshToken: account?.refresh_token,
-            expiresAt: expiresAt,
-            joinedAt: new Date(),
+            name: user.name || undefined,
+            email: user.email || undefined,
+            spotify,
+            updatedAt: new Date(),
+          },
+          $setOnInsert: {
+            createdAt: new Date(),
           },
         },
         { upsert: true }
