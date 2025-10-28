@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const cronToken = req.headers.get("x-cron-token");
+    const cronToken = req.headers.get("authorization");
     if (cronToken !== process.env.CRON_SECRET) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
