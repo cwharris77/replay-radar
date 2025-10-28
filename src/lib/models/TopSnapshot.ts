@@ -24,6 +24,6 @@ export interface TopSnapshot {
 
 export async function getTopSnapshotCollection() {
   const client = await clientPromise;
-  const db = client.db(process.env.MONGODB_DB_NAME);
+  const db = client.db(process.env.MONGO_DB_NAME);
   return db.collection<TopSnapshot>("topSnapshots");
 }
