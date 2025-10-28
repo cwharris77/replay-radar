@@ -44,7 +44,7 @@ export default function TopTracks() {
           </button>
         ))}
       </div>
-      <div className='default-card-grid'>
+      <div className='default-card-grid' data-testid='top-tracks'>
         {tracks.map((track) => (
           <TiltedCard
             altText={track.name}

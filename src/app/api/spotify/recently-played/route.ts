@@ -1,6 +1,6 @@
 import { requireSession } from "@/lib/auth";
 import { SpotifyCache } from "@/lib/models/SpotifyCache";
-import { refreshSpotifyToken } from "@/lib/spotify";
+import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
 import { Track } from "@/types";
 import { NextResponse } from "next/server";
 
@@ -31,16 +31,17 @@ export async function GET() {
     // Check if token expired
     const now = Date.now();
     if (session.user.expiresAt && session.user.expiresAt < now) {
-      const refreshedTokenResponse = await refreshSpotifyToken(
+      const { accessToken: refreshedAccessToken } = await refreshAccessToken(
         session.user.refreshToken || ""
       );
-      if (!refreshedTokenResponse || !refreshedTokenResponse.access_token) {
+
+      if (!refreshedAccessToken) {
         return NextResponse.json(
           { error: "Failed to refresh token" },
           { status: 401 }
         );
       }
-      accessToken = refreshedTokenResponse.access_token;
+      accessToken = refreshedAccessToken;
     }
 
     const response = await fetch(

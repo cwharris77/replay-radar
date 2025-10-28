@@ -44,7 +44,7 @@ export default function TopArtists() {
           </button>
         ))}
       </div>
-      <div className='default-card-grid'>
+      <div className='default-card-grid' data-testid='top-artists'>
         {artists.map((artist) => (
           <TiltedCard
             altText={artist.name}

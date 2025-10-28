@@ -1,7 +1,7 @@
 import { requireSession } from "@/lib/auth";
 import { SpotifyCache } from "@/lib/models/SpotifyCache";
-import { refreshSpotifyToken } from "@/lib/spotify";
 import fetchFromSpotify from "@/lib/spotify/getSpotifyData";
+import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
 import { SpotifyDataType, TimeRange } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -38,12 +38,11 @@ export async function GET(req: NextRequest) {
     const now = Date.now();
     if (session.user.expiresAt && session.user.expiresAt < now) {
       try {
-        const refreshed = await refreshSpotifyToken(
-          session.user.refreshToken || ""
-        );
-        accessToken = refreshed.access_token;
+        const { accessToken: refreshedAccessToken, expiresAt } =
+          await refreshAccessToken(session.user.refreshToken || "");
+        accessToken = refreshedAccessToken;
         session.user.accessToken = accessToken;
-        session.user.expiresAt = now + refreshed.expires_in * 1000;
+        session.user.expiresAt = now + expiresAt * 1000;
       } catch (err) {
         console.error("Failed to refresh token:", err);
         return NextResponse.json(
