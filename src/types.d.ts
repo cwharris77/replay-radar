@@ -56,9 +56,19 @@ export interface SpotifyResponse {
 export type TimeRange = "short_term" | "medium_term" | "long_term";
 export type SpotifyDataType = "artists" | "tracks";
 
-export interface SpotifyRefreshResponse {
+export interface SpotifyRefreshSuccessResponse {
   access_token: string;
   token_type: "Bearer";
   scope: string;
   expires_in: number; // seconds until expiration
+  refresh_token?: string;
 }
+
+export interface SpotifyRefreshErrorResponse {
+  error: string;
+  error_description?: string;
+}
+
+export type SpotifyRefreshResponse =
+  | SpotifyRefreshSuccessResponse
+  | SpotifyRefreshErrorResponse;

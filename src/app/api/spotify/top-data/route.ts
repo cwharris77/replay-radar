@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
           await refreshAccessToken(session.user.refreshToken || "");
         accessToken = refreshedAccessToken;
         session.user.accessToken = accessToken;
-        session.user.expiresAt = now + expiresAt * 1000;
+        session.user.expiresAt = expiresAt;
       } catch (err) {
         console.error("Failed to refresh token:", err);
         return NextResponse.json(

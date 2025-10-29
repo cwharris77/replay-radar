@@ -20,14 +20,18 @@ export async function GET(req: NextRequest) {
     const users = await usersCollection.find({}).toArray();
 
     for (const user of users) {
-      let { accessToken, expiresAt } = user.spotify;
-      const { refreshToken } = user.spotify;
+      let { accessToken, expiresAt, refreshToken } = user.spotify;
 
       // Refresh if expired
-      if (Date.now() > expiresAt) {
+      if (true || Date.now() > expiresAt) {
         const tokenData = await refreshAccessToken(refreshToken);
-        accessToken = tokenData.accessToken;
-        expiresAt = tokenData.expiresAt;
+        accessToken = tokenData.accessToken || accessToken;
+        expiresAt = tokenData.expiresAt || expiresAt;
+        refreshToken = tokenData.refreshToken || refreshToken;
+
+        console.log(
+          `Refreshed token for user ${user._id}\nAccess Token: ${accessToken}\nExpires At: ${expiresAt} refreshToken: ${refreshToken}`
+        );
 
         await usersCollection.updateOne(
           { _id: user._id },
@@ -35,6 +39,7 @@ export async function GET(req: NextRequest) {
             $set: {
               "spotify.accessToken": accessToken,
               "spotify.expiresAt": expiresAt,
+              "spotify.refreshToken": refreshToken,
               updatedAt: new Date(),
             },
           }
