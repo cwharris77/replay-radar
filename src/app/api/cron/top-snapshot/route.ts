@@ -23,15 +23,11 @@ export async function GET(req: NextRequest) {
       let { accessToken, expiresAt, refreshToken } = user.spotify;
 
       // Refresh if expired
-      if (true || Date.now() > expiresAt) {
+      if (Date.now() > expiresAt) {
         const tokenData = await refreshAccessToken(refreshToken);
         accessToken = tokenData.accessToken || accessToken;
         expiresAt = tokenData.expiresAt || expiresAt;
         refreshToken = tokenData.refreshToken || refreshToken;
-
-        console.log(
-          `Refreshed token for user ${user._id}\nAccess Token: ${accessToken}\nExpires At: ${expiresAt} refreshToken: ${refreshToken}`
-        );
 
         await usersCollection.updateOne(
           { _id: user._id },

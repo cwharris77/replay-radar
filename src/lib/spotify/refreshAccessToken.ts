@@ -9,8 +9,6 @@ function isSpotifyErrorResponse(
 
 export async function refreshAccessToken(refreshToken: string) {
   try {
-    console.log("[REFRESH] Starting refresh...");
-
     const response = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
       headers: {
@@ -44,7 +42,6 @@ export async function refreshAccessToken(refreshToken: string) {
     }
 
     const expiresAt = Date.now() + (data.expires_in ?? 3600) * 1000;
-    console.log("[REFRESH] Success. Token expires at:", new Date(expiresAt));
 
     return {
       accessToken: data.access_token,

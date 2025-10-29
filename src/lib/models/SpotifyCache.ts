@@ -74,11 +74,6 @@ export class SpotifyCache {
     timeRange?: string
   ): Promise<void> {
     try {
-      console.log(
-        `Attempting to cache data for user ${userId}, type: ${type}, timeRange: ${
-          timeRange || "none"
-        }`
-      );
       const client = await clientPromise;
       const collection = client
         .db(process.env.MONGO_DB_NAME)
@@ -101,7 +96,6 @@ export class SpotifyCache {
         { $set: cacheData },
         { upsert: true }
       );
-      console.log("Successfully cached data");
     } catch (error) {
       console.error("Failed to cache data:", error);
       throw error;
