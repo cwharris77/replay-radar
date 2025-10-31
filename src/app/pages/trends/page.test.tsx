@@ -236,4 +236,24 @@ test.describe("Trends Page", () => {
     const emptyMessage = page.getByText(/no trend data/i);
     await expect(emptyMessage).not.toBeVisible();
   });
+
+  test("should show login prompt when user is not authenticated", async ({
+    page,
+  }) => {
+    // Mock unauthenticated session
+    await page.route("**/api/auth/session", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({}),
+      });
+    });
+
+    await page.goto(`${BASE_URL}/pages/trends`);
+
+    // Should show login prompt
+    await expect(page.getByText("Login to View Your Trends")).toBeVisible();
+    await expect(page.getByText(/connect your spotify account/i)).toBeVisible();
+    await expect(page.getByText("Log in with Spotify")).toBeVisible();
+  });
 });

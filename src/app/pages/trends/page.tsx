@@ -2,7 +2,9 @@
 
 import ErrorCard from "@/app/components/ErrorCard";
 import Loading from "@/app/components/Loading";
+import LoginPrompt from "@/app/components/LoginPrompt";
 import TrendLineChart from "@/app/components/TrendLineChart";
+import { useNextAuth } from "@/app/hooks/useNextAuth";
 import { useEffect, useMemo, useState } from "react";
 
 type TabType = "artists" | "tracks" | "genres";
@@ -20,12 +22,18 @@ interface TrendsResponse {
 }
 
 export default function TrendsPage() {
+  const { isAuthenticated, isLoading: authLoading } = useNextAuth();
   const [tab, setTab] = useState<TabType>("artists");
   const [data, setData] = useState<TrendsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+
     const controller = new AbortController();
     async function load() {
       try {
@@ -37,8 +45,14 @@ export default function TrendsPage() {
           signal: controller.signal,
         });
         if (!res.ok) {
-          const t = await res.text();
-          throw new Error(t || "Failed to load trends");
+          if (res.status === 401) {
+            setError("Authentication required. Please log in.");
+            return;
+          }
+          const errorData = await res
+            .json()
+            .catch(() => ({ error: "Failed to load trends" }));
+          throw new Error(errorData.error || "Failed to load trends");
         }
         const json = (await res.json()) as TrendsResponse;
         setData(json);
@@ -51,12 +65,34 @@ export default function TrendsPage() {
     }
     load();
     return () => controller.abort();
-  }, [tab]);
+  }, [tab, isAuthenticated]);
 
   const hasData = useMemo(
     () => data && data.labels.length > 0 && data.series.length > 0,
     [data]
   );
+
+  if (authLoading) {
+    return (
+      <div className='max-w-6xl mx-auto px-4 py-6 md:py-8'>
+        <Loading size='md' text='Loading...' />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className='max-w-6xl mx-auto px-4 py-6 md:py-8'>
+        <h1 className='text-2xl md:text-3xl font-bold text-white mb-4'>
+          Your Trends
+        </h1>
+        <LoginPrompt
+          title='Login to View Your Trends'
+          message='Connect your Spotify account to see your listening trends over time.'
+        />
+      </div>
+    );
+  }
 
   return (
     <div className='max-w-6xl mx-auto px-4 py-6 md:py-8'>

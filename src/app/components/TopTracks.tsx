@@ -14,7 +14,7 @@ export default function TopTracks() {
 
   const handleRangeChange = (range: string) => {
     setSelectedRange(range);
-    fetchSpotifyData("artists", range);
+    fetchSpotifyData("tracks", range);
   };
 
   if (isLoading) {

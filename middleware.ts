@@ -1,7 +1,15 @@
 import { requireSession } from "@/lib/auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function middleware() {
+const publicRoutes = ["/api/auth"];
+
+export async function middleware(req: NextRequest) {
+  const pathname = req.nextUrl.pathname;
+
+  if (publicRoutes.some((route) => pathname.startsWith(route))) {
+    return NextResponse.next();
+  }
+
   const session = await requireSession();
 
   if (session instanceof NextResponse) return session; // block unauthorized
