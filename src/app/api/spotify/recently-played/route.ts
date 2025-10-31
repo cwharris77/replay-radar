@@ -29,8 +29,7 @@ export async function GET() {
     let accessToken = session.user.accessToken;
 
     // Check if token expired
-    const now = Date.now();
-    if (session.user.expiresAt && session.user.expiresAt < now) {
+    if (session.user.expiresAt && Date.now() > session.user.expiresAt) {
       const { accessToken: refreshedAccessToken } = await refreshAccessToken(
         session.user.refreshToken || ""
       );

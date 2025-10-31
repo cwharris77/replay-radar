@@ -21,8 +21,7 @@ export async function GET(req: NextRequest) {
 
     // Ensure valid access token (refresh if expired)
     let accessToken = session.user.accessToken || "";
-    const now = Date.now();
-    if (session.user.expiresAt && session.user.expiresAt < now) {
+    if (session.user.expiresAt && Date.now() > session.user.expiresAt) {
       try {
         const { accessToken: refreshedAccessToken = "", expiresAt } =
           await refreshAccessToken(session.user.refreshToken || "");

@@ -35,8 +35,7 @@ export async function GET(req: NextRequest) {
     let accessToken = session.user.accessToken;
 
     // Check if token expired
-    const now = Date.now();
-    if (session.user.expiresAt && session.user.expiresAt < now) {
+    if (session.user.expiresAt && Date.now() > session.user.expiresAt) {
       try {
         const { accessToken: refreshedAccessToken, expiresAt } =
           await refreshAccessToken(session.user.refreshToken || "");
@@ -52,7 +51,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const data = await fetchFromSpotify(type, timeRange, accessToken || "");
+    const data = await fetchFromSpotify({ type, timeRange, accessToken });
 
     // Cache the new data
     await SpotifyCache.setCache(userId, type, data.items, timeRange);

@@ -29,7 +29,7 @@ export async function buildRankAnchors(
   ];
 
   const responses = await Promise.all(
-    ranges.map((r) => getSpotifyData(type, r.key, accessToken))
+    ranges.map((r) => getSpotifyData({ type, timeRange: r.key, accessToken }))
   );
 
   const rankMaps = responses.map((resp) => {
@@ -63,7 +63,14 @@ export async function buildGenreAnchors(
   ];
 
   const responses = await Promise.all(
-    ranges.map((r) => getSpotifyData("artists", r.key, accessToken))
+    ranges.map((r) =>
+      getSpotifyData({
+        type: "artists",
+        timeRange: r.key,
+        accessToken,
+        limit: 50,
+      })
+    )
   );
 
   const countsList = responses.map((resp) => {

@@ -1,5 +1,5 @@
-import { getTopSnapshotCollection } from "@/lib/models/TopSnapshot";
 import { getGenreSnapshotCollection } from "@/lib/models/GenreSnapshot";
+import { getTopSnapshotCollection } from "@/lib/models/TopSnapshot";
 import { getUserCollection } from "@/lib/models/User";
 import getSpotifyData from "@/lib/spotify/getSpotifyData";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
@@ -53,8 +53,8 @@ export async function GET(req: NextRequest) {
       for (const timeRange of timeRanges) {
         // Fetch artists and tracks separately for this timeRange
         const [artistsData, tracksData] = await Promise.all([
-          getSpotifyData("artists", timeRange, accessToken),
-          getSpotifyData("tracks", timeRange, accessToken),
+          getSpotifyData({ type: "artists", timeRange, accessToken }),
+          getSpotifyData({ type: "tracks", timeRange, accessToken }),
         ]);
 
         await topSnapshotCollection.insertOne({
@@ -76,9 +76,12 @@ export async function GET(req: NextRequest) {
         // Compute genre counts from artists
         const genreCounts = new Map<string, number>();
         for (const artist of artistsData.items) {
-          const genres = artist.genres || [];
-          for (const g of genres) {
-            genreCounts.set(g, (genreCounts.get(g) || 0) + 1);
+          // Only consider items that have 'genres' property
+          if ("genres" in artist && Array.isArray(artist.genres)) {
+            const genres: string[] = artist.genres;
+            for (const g of genres) {
+              genreCounts.set(g, (genreCounts.get(g) || 0) + 1);
+            }
           }
         }
 
