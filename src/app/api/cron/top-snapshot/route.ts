@@ -3,6 +3,7 @@ import { getTopSnapshotCollection } from "@/lib/models/TopSnapshot";
 import { getUserCollection } from "@/lib/models/User";
 import getSpotifyData from "@/lib/spotify/getSpotifyData";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
+import { Artist } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -74,14 +75,13 @@ export async function GET(req: NextRequest) {
         });
 
         // Compute genre counts from artists
+        // Type assertion safe here since type: "artists" guarantees Artist[]
+        const artists = artistsData.items as Artist[];
         const genreCounts = new Map<string, number>();
-        for (const artist of artistsData.items) {
-          // Only consider items that have 'genres' property
-          if ("genres" in artist && Array.isArray(artist.genres)) {
-            const genres: string[] = artist.genres;
-            for (const g of genres) {
-              genreCounts.set(g, (genreCounts.get(g) || 0) + 1);
-            }
+        for (const artist of artists) {
+          const genres = artist.genres || [];
+          for (const g of genres) {
+            genreCounts.set(g, (genreCounts.get(g) || 0) + 1);
           }
         }
 
