@@ -18,6 +18,7 @@ const items = [
     links: [
       { label: "Artists", ariaLabel: "Artists Page", href: "/pages/artists" },
       { label: "Tracks", ariaLabel: "Tracks Page", href: "/pages/tracks" },
+      { label: "Trends", ariaLabel: "Trends Page", href: "/pages/trends" },
     ],
   },
   {

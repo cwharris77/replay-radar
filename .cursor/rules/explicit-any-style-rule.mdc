@@ -1,0 +1,6 @@
+---
+alwaysApply: true
+---
+
+- Never use an explicit any
+- Always properly type values

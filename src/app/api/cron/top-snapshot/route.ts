@@ -1,4 +1,5 @@
 import { getTopSnapshotCollection } from "@/lib/models/TopSnapshot";
+import { getGenreSnapshotCollection } from "@/lib/models/GenreSnapshot";
 import { getUserCollection } from "@/lib/models/User";
 import getSpotifyData from "@/lib/spotify/getSpotifyData";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
@@ -16,6 +17,7 @@ export async function GET(req: NextRequest) {
 
     const usersCollection = await getUserCollection();
     const topSnapshotCollection = await getTopSnapshotCollection();
+    const genreSnapshotCollection = await getGenreSnapshotCollection();
 
     const users = await usersCollection.find({}).toArray();
 
@@ -42,14 +44,48 @@ export async function GET(req: NextRequest) {
         );
       }
 
-      const types: ("artists" | "tracks")[] = ["artists", "tracks"];
-      for (const type of types) {
-        const data = await getSpotifyData(type, "medium_term", accessToken);
+      const timeRanges: ("short_term" | "medium_term" | "long_term")[] = [
+        "short_term",
+        "medium_term",
+        "long_term",
+      ];
+
+      for (const timeRange of timeRanges) {
+        // Fetch artists and tracks separately for this timeRange
+        const [artistsData, tracksData] = await Promise.all([
+          getSpotifyData("artists", timeRange, accessToken),
+          getSpotifyData("tracks", timeRange, accessToken),
+        ]);
+
         await topSnapshotCollection.insertOne({
           userId: user._id?.toString() || "",
-          type,
-          timeRange: "medium_term",
-          items: data.items,
+          type: "artists",
+          timeRange,
+          items: artistsData.items,
+          takenAt: new Date(),
+        });
+
+        await topSnapshotCollection.insertOne({
+          userId: user._id?.toString() || "",
+          type: "tracks",
+          timeRange,
+          items: tracksData.items,
+          takenAt: new Date(),
+        });
+
+        // Compute genre counts from artists
+        const genreCounts = new Map<string, number>();
+        for (const artist of artistsData.items) {
+          const genres = artist.genres || [];
+          for (const g of genres) {
+            genreCounts.set(g, (genreCounts.get(g) || 0) + 1);
+          }
+        }
+
+        await genreSnapshotCollection.insertOne({
+          userId: user._id?.toString() || "",
+          timeRange,
+          counts: Object.fromEntries(genreCounts),
           takenAt: new Date(),
         });
       }
