@@ -12,5 +12,3 @@ export async function getGenreSnapshotCollection() {
   const db = client.db(process.env.MONGO_DB_NAME);
   return db.collection<GenreSnapshot>("genreSnapshots");
 }
-
-

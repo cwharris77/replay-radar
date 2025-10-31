@@ -93,7 +93,7 @@ export default function TrendsPage() {
             <TrendLineChart
               labels={data!.labels}
               series={data!.series}
-              maxRank={20}
+              maxRank={10}
               mode={tab === "genres" ? "count" : "rank"}
             />
           ) : (

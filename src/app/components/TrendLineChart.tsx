@@ -1,19 +1,19 @@
 "use client";
 
 import {
-  Chart as ChartJS,
   CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
+  Chart as ChartJS,
   Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Tooltip,
   type ChartData,
   type ChartOptions,
   type TooltipItem,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
 import { useMemo } from "react";
+import { Line } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
@@ -48,14 +48,22 @@ const COLORS = [
   "#f472b6",
 ];
 
-export default function TrendLineChart({ labels, series, maxRank = 20, mode = "rank" }: TrendLineChartProps) {
+const COLOR_NAMES = ["Green", "Blue", "Amber", "Red", "Violet", "Teal", "Pink"];
+
+export default function TrendLineChart({
+  labels,
+  series,
+  maxRank = 20,
+  mode = "rank",
+}: TrendLineChartProps) {
   const data = useMemo<ChartData<"line">>(() => {
     return {
       labels,
       datasets: series.map((s, idx) => {
         const color = COLORS[idx % COLORS.length];
+        const colorName = COLOR_NAMES[idx % COLOR_NAMES.length];
         return {
-          label: s.name,
+          label: `${s.name} (${colorName})`,
           data: s.data,
           borderColor: color,
           backgroundColor: color,
@@ -80,8 +88,10 @@ export default function TrendLineChart({ labels, series, maxRank = 20, mode = "r
           callbacks: {
             label: (ctx: TooltipItem<"line">) => {
               const label = ctx.dataset?.label ?? "";
-              const value = typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
-              if (value == null) return `${label}: ${isRank ? "not ranked" : 0}`;
+              const value =
+                typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
+              if (value == null)
+                return `${label}: ${isRank ? "not ranked" : 0}`;
               return isRank ? `${label}: #${value}` : `${label}: ${value}`;
             },
           },
@@ -91,10 +101,10 @@ export default function TrendLineChart({ labels, series, maxRank = 20, mode = "r
         x: { grid: { display: false } },
         y: isRank
           ? {
-              reverse: false,
+              reverse: true,
               min: 1,
               max: maxRank,
-              ticks: { stepSize: 1, callback: (v) => `#${v}` },
+              ticks: { stepSize: 1, precision: 0, callback: (v) => `#${v}` },
             }
           : {
               beginAtZero: true,
@@ -109,5 +119,3 @@ export default function TrendLineChart({ labels, series, maxRank = 20, mode = "r
     </div>
   );
 }
-
-

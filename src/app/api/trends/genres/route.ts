@@ -1,5 +1,7 @@
 import { requireSession } from "@/lib/auth";
 import { getGenreSnapshotCollection } from "@/lib/models/GenreSnapshot";
+import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
+import { buildGenreAnchors } from "@/lib/trends/anchors";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -17,13 +19,54 @@ export async function GET(req: NextRequest) {
 
     const collection = await getGenreSnapshotCollection();
 
+    // Ensure valid access token (refresh if expired)
+    let accessToken = session.user.accessToken || "";
+    const now = Date.now();
+    if (session.user.expiresAt && session.user.expiresAt < now) {
+      try {
+        const { accessToken: refreshedAccessToken = "", expiresAt } =
+          await refreshAccessToken(session.user.refreshToken || "");
+        accessToken = refreshedAccessToken || "";
+        session.user.accessToken = accessToken;
+        session.user.expiresAt = expiresAt;
+      } catch (err) {
+        console.error("Failed to refresh token:", err);
+        return NextResponse.json(
+          { error: "Spotify token expired" },
+          { status: 401 }
+        );
+      }
+    }
+
     const snapshots = await collection
       .find({ userId: session.user.id, timeRange })
       .sort({ takenAt: -1 })
       .limit(limit)
       .toArray();
 
-    if (snapshots.length === 0) {
+    // Build anchors from live Spotify data (long_term, medium_term)
+    const { labels: anchorLabels, countsList } = await buildGenreAnchors(
+      accessToken
+    );
+    const anchors = anchorLabels.map((label, i) => ({
+      label,
+      counts: countsList[i],
+    }));
+
+    const chronological = [...snapshots].reverse();
+    const snapshotLabels = chronological.map((s) =>
+      new Date(s.takenAt).toLocaleDateString()
+    );
+    const labels = [...anchors.map((a) => a.label), ...snapshotLabels];
+
+    const latestCounts: Record<string, number> | null =
+      chronological.length > 0
+        ? chronological[chronological.length - 1].counts
+        : anchors.find((a) => a.label === "Medium term")?.counts ||
+          anchors[0]?.counts ||
+          null;
+
+    if (!latestCounts) {
       return NextResponse.json({
         labels: [],
         series: [],
@@ -32,21 +75,15 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const chronological = [...snapshots].reverse();
-    const labels = chronological.map((s) =>
-      new Date(s.takenAt).toLocaleDateString()
-    );
-
-    // Determine top genres by most recent snapshot counts
-    const latestCounts = chronological[chronological.length - 1].counts;
     const topGenres = Object.entries(latestCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, maxSeries)
       .map(([genre]) => genre);
 
     const series = topGenres.map((genre) => {
-      const data = chronological.map((snap) => snap.counts[genre] ?? 0);
-      return { id: genre, name: genre, data };
+      const anchorData = anchors.map((a) => a.counts[genre] ?? 0);
+      const snapshotData = chronological.map((snap) => snap.counts[genre] ?? 0);
+      return { id: genre, name: genre, data: [...anchorData, ...snapshotData] };
     });
 
     return NextResponse.json({ labels, series, type: "genres", timeRange });
