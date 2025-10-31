@@ -16,11 +16,11 @@ export async function GET() {
     const topSnapshotCollection = await getTopSnapshotCollection();
 
     for (const type of types) {
-      const data = await fetchFromSpotify(
+      const data = await fetchFromSpotify({
         type,
-        "medium_term",
-        session.user.accessToken || ""
-      );
+        timeRange: "medium_term",
+        accessToken: session.user.accessToken,
+      });
 
       await topSnapshotCollection.insertOne({
         userId,

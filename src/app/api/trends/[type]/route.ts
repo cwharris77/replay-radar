@@ -8,7 +8,7 @@ type AllowedType = "artists" | "tracks";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ type: AllowedType }> }
+  { params }: { params: Promise<{ type: string }> }
 ) {
   try {
     const session = await requireSession();
@@ -18,6 +18,8 @@ export async function GET(
     if (type !== "artists" && type !== "tracks") {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
+
+    const typeAsAllowed: AllowedType = type as AllowedType;
 
     const { searchParams } = new URL(req.url);
     const limit = Number(searchParams.get("limit") || 12); // last N snapshots
@@ -49,7 +51,7 @@ export async function GET(
 
     // Get most recent N snapshots for this user/type/timeRange
     const snapshots = await collection
-      .find({ userId: session.user.id, type, timeRange })
+      .find({ userId: session.user.id, type: typeAsAllowed, timeRange })
       .sort({ takenAt: -1 })
       .limit(limit)
       .toArray();
@@ -59,7 +61,7 @@ export async function GET(
       labels: anchorLabels,
       rankMaps: anchorRankMaps,
       mediumItems,
-    } = await buildRankAnchors(type, accessToken);
+    } = await buildRankAnchors(typeAsAllowed, accessToken);
 
     // Fallback for first-time users: if no snapshots, build a 2-point (or 0) trend
     // using live Spotify data across long/medium term
@@ -78,14 +80,19 @@ export async function GET(
           id: item.id,
           name: item.name,
           imageUrl:
-            (type === "artists"
+            (typeAsAllowed === "artists"
               ? item.images?.[0]?.url
               : item.album?.images?.[0]?.url) || null,
           data,
         };
       });
 
-      return NextResponse.json({ labels, series, type, timeRange });
+      return NextResponse.json({
+        labels,
+        series,
+        type: typeAsAllowed,
+        timeRange,
+      });
     }
 
     // Reverse to chronological order and prepend anchors
@@ -115,14 +122,19 @@ export async function GET(
         id: item.id,
         name: item.name,
         imageUrl:
-          (type === "artists"
+          (typeAsAllowed === "artists"
             ? item.images?.[0]?.url
             : item.album?.images?.[0]?.url) || null,
         data, // ranks, null if missing
       };
     });
 
-    return NextResponse.json({ labels, series, type, timeRange });
+    return NextResponse.json({
+      labels,
+      series,
+      type: typeAsAllowed,
+      timeRange,
+    });
   } catch (err) {
     console.error("[TrendsAPI] Error:", err);
     return NextResponse.json(
