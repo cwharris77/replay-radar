@@ -253,9 +253,7 @@ test.describe("Trends Page", () => {
 
     // Should show login prompt
     await expect(page.getByText("Login to View Your Trends")).toBeVisible();
-    await expect(
-      page.getByText(/connect your spotify account/i)
-    ).toBeVisible();
+    await expect(page.getByText(/connect your spotify account/i)).toBeVisible();
     await expect(page.getByText("Log in with Spotify")).toBeVisible();
   });
 });
