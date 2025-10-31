@@ -8,13 +8,13 @@ type AllowedType = "artists" | "tracks";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { type: AllowedType } }
+  { params }: { params: Promise<{ type: AllowedType }> }
 ) {
   try {
     const session = await requireSession();
     if (session instanceof NextResponse) return session;
 
-    const type = params.type;
+    const { type } = await params;
     if (type !== "artists" && type !== "tracks") {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
