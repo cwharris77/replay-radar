@@ -23,9 +23,11 @@
   --color-muted-rgb: 179, 179, 179;
 
   /* Accents */
-  --color-pink: #f03e8c;
-  --color-yellow: #ffc83d;
-  --color-blue: #1db2f2;
+  --pink: #f03e8c;
+  --yellow: #ffc83d;
+  --blue: #1db2f2;
+  --red: #ec0b0b;
+  --auburn: #a22c29;
   --radius: 0.625rem;
   --background: oklch(0% 0 0);
   --foreground: oklch(0% 0 0);
@@ -35,7 +37,7 @@
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: #121212;
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -74,9 +76,10 @@
   --color-muted: #b3b3b3;
 
   /* Accents */
-  --color-pink: #f03e8c;
-  --color-yellow: #ffc83d;
-  --color-blue: #1db2f2;
+  --color-pink: var(--pink);
+  --color-yellow: var(--yellow);
+  --color-blue: var(--blue);
+  --color-secondary: var(--secondary);
 }
 
 @theme inline {
@@ -90,7 +93,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
+  --color-primary: var(--color-primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -174,5 +177,9 @@
 
   .default-card-grid {
     @apply grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6 px-2 sm:px-4 md:px-6;
+  }
+
+  .logo {
+    @apply w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 bg-transparent;
   }
 }

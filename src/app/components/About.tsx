@@ -1,10 +1,9 @@
 "use client";
 import { useNextAuth } from "../hooks/useNextAuth";
 import Loading from "./Loading";
-import Login from "./Login";
 
 export default function About() {
-  const { isAuthenticated, isLoading } = useNextAuth();
+  const { isLoading } = useNextAuth();
 
   if (isLoading) {
     return (
@@ -15,7 +14,7 @@ export default function About() {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen bg-[#121212] text-white px-4 rounded-lg shadow-lg'>
+    <div className='flex flex-col items-center justify-center min-h-screen bg-secondary text-white px-4 rounded-lg shadow-lg'>
       {/* Hero Section */}
       <section className='text-center max-w-2xl my-12'>
         <h1 className='text-4xl sm:text-5xl font-bold mb-4'>
@@ -25,7 +24,6 @@ export default function About() {
           Replay Radar helps you visualize your top artists, tracks, and trends
           from Spotify. Discover your musical identity across time.
         </p>
-        {!isAuthenticated && <Login />}
       </section>
 
       {/* Features Section */}
