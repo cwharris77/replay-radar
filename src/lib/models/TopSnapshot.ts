@@ -1,3 +1,4 @@
+import { TimeRange } from "@/app/constants";
 import { ObjectId } from "mongodb";
 import clientPromise from "../mongodb";
 
@@ -17,7 +18,7 @@ export interface TopSnapshot {
   _id?: ObjectId;
   userId: string;
   type: "artists" | "tracks";
-  timeRange: "short_term" | "medium_term" | "long_term";
+  timeRange: TimeRange;
   items: TopItem[];
   takenAt: Date;
 }

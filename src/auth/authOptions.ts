@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
 
       // Calculate token expiration
       const expiresAt = account.expires_at
-        ? Date.now() + account.expires_at * 1000
+        ? account.expires_at * 1000
         : Date.now() + 3600 * 1000; // fallback 1 hour
 
       const spotify: SpotifyTokens = {

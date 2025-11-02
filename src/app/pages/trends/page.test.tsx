@@ -32,7 +32,7 @@ test.describe("Trends Page", () => {
           labels: ["Day 1", "Day 2"],
           series: [{ id: "1", name: "Artist 1", data: [1, 2], imageUrl: null }],
           type: "artists",
-          timeRange: "medium_term",
+          timeRange: "medium_term" as const,
         }),
       });
     });
@@ -77,7 +77,7 @@ test.describe("Trends Page", () => {
               : requestCount === 2
               ? "tracks"
               : "genres",
-          timeRange: "medium_term",
+          timeRange: "medium_term" as const,
         }),
       });
     });
@@ -113,7 +113,7 @@ test.describe("Trends Page", () => {
           labels: ["Day 1"],
           series: [{ id: "1", name: "Item", data: [1], imageUrl: null }],
           type: url.includes("genres") ? "genres" : "artists",
-          timeRange: "medium_term",
+          timeRange: "medium_term" as const,
         }),
       });
     });
@@ -166,7 +166,7 @@ test.describe("Trends Page", () => {
           labels: ["Day 1"],
           series: [{ id: "1", name: "Item", data: [1], imageUrl: null }],
           type: "artists",
-          timeRange: "medium_term",
+          timeRange: "medium_term" as const,
         }),
       });
     });
@@ -191,7 +191,7 @@ test.describe("Trends Page", () => {
           labels: [],
           series: [],
           type: "artists",
-          timeRange: "medium_term",
+          timeRange: "medium_term" as const,
         }),
       });
     });
@@ -218,7 +218,7 @@ test.describe("Trends Page", () => {
             { id: "2", name: "Artist 2", data: [2, 1, 2], imageUrl: null },
           ],
           type: "artists",
-          timeRange: "medium_term",
+          timeRange: "medium_term" as const,
         }),
       });
     });

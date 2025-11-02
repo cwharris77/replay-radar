@@ -1,6 +1,5 @@
 import { timeRange } from "@/app/constants";
 import { getGenreSnapshotCollection } from "@/lib/models/GenreSnapshot";
-import { getTopSnapshotCollection } from "@/lib/models/TopSnapshot";
 import { getUserCollection } from "@/lib/models/User";
 import getSpotifyData from "@/lib/spotify/getSpotifyData";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
@@ -18,7 +17,6 @@ export async function GET(req: NextRequest) {
     }
 
     const usersCollection = await getUserCollection();
-    const topSnapshotCollection = await getTopSnapshotCollection();
     const genreSnapshotCollection = await getGenreSnapshotCollection();
 
     const users = await usersCollection.find({}).toArray();
@@ -47,26 +45,11 @@ export async function GET(req: NextRequest) {
       }
 
       for (const range of Object.values(timeRange) as TimeRange[]) {
-        // Fetch artists and tracks separately for this timeRange
-        const [artistsData, tracksData] = await Promise.all([
-          getSpotifyData({ type: "artists", timeRange: range, accessToken }),
-          getSpotifyData({ type: "tracks", timeRange: range, accessToken }),
-        ]);
-
-        await topSnapshotCollection.insertOne({
-          userId: user._id?.toString() || "",
+        // Fetch artists data for this timeRange
+        const artistsData = await getSpotifyData({
           type: "artists",
           timeRange: range,
-          items: artistsData.items,
-          takenAt: new Date(),
-        });
-
-        await topSnapshotCollection.insertOne({
-          userId: user._id?.toString() || "",
-          type: "tracks",
-          timeRange: range,
-          items: tracksData.items,
-          takenAt: new Date(),
+          accessToken,
         });
 
         // Compute genre counts from artists
@@ -91,7 +74,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Snapshots created for all users",
+      message: "Genre snapshots created for all users",
     });
   } catch (err: unknown) {
     console.error(err);

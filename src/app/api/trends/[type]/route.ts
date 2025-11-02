@@ -1,7 +1,9 @@
+import { timeRange as timeRangeConst } from "@/app/constants";
 import { requireSession } from "@/lib/auth";
 import { getTopSnapshotCollection } from "@/lib/models/TopSnapshot";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
 import { buildRankAnchors } from "@/lib/trends/anchors";
+import { TimeRange } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
 type AllowedType = "artists" | "tracks";
@@ -24,10 +26,8 @@ export async function GET(
     const { searchParams } = new URL(req.url);
     const limit = Number(searchParams.get("limit") || 12); // last N snapshots
     const maxSeries = Number(searchParams.get("maxSeries") || 5); // top N items to plot
-    const timeRange = (searchParams.get("timeRange") || "medium_term") as
-      | "short_term"
-      | "medium_term"
-      | "long_term";
+    const timeRange = (searchParams.get("timeRange") ||
+      timeRangeConst.medium) as TimeRange;
 
     const collection = await getTopSnapshotCollection();
 

@@ -54,7 +54,7 @@ test.describe("Trends API Routes", () => {
             labels: ["Day 1", "Day 2"],
             series: [{ id: "1", name: "Artist 1", data: [1, 2] }],
             type: "artists",
-            timeRange: "medium_term",
+            timeRange: "medium_term" as const,
           }),
         });
       });
@@ -93,7 +93,7 @@ test.describe("Trends API Routes", () => {
             labels: ["Long term", "Medium term"],
             series: [{ id: "rock", name: "Rock", data: [5, 3] }],
             type: "genres",
-            timeRange: "medium_term",
+            timeRange: "medium_term" as const,
           }),
         });
       });

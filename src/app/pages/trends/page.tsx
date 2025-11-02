@@ -5,6 +5,7 @@ import Loading from "@/app/components/Loading";
 import LoginPrompt from "@/app/components/LoginPrompt";
 import TrendLineChart from "@/app/components/TrendLineChart";
 import { useNextAuth } from "@/app/hooks/useNextAuth";
+import { TimeRange } from "@/types";
 import { useEffect, useMemo, useState } from "react";
 
 type TabType = "artists" | "tracks" | "genres";
@@ -18,7 +19,7 @@ interface TrendsResponse {
     data: (number | null)[];
   }>;
   type: TabType;
-  timeRange: "short_term" | "medium_term" | "long_term";
+  timeRange: TimeRange;
 }
 
 export default function TrendsPage() {
