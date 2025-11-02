@@ -1,3 +1,4 @@
+import { timeRange } from "@/app/constants";
 import { requireSession } from "@/lib/auth";
 import { getTopSnapshotCollection } from "@/lib/models/TopSnapshot";
 import fetchFromSpotify from "@/lib/spotify/getSpotifyData";
@@ -11,21 +12,21 @@ export async function GET() {
     if (session instanceof NextResponse) return session;
 
     const userId = session.user.id;
-    const timeRange: TimeRange = "short_term";
+    const timeRangeValue: TimeRange = timeRange.short;
     const types: SpotifyDataType[] = ["artists", "tracks"];
     const topSnapshotCollection = await getTopSnapshotCollection();
 
     for (const type of types) {
       const data = await fetchFromSpotify({
         type,
-        timeRange: "medium_term",
+        timeRange: timeRange.medium,
         accessToken: session.user.accessToken,
       });
 
       await topSnapshotCollection.insertOne({
         userId,
         type: "artists",
-        timeRange,
+        timeRange: timeRangeValue,
         items: data.items,
         takenAt: new Date(),
       });

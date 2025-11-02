@@ -1,8 +1,9 @@
+import { TimeRange } from "@/app/constants";
 import clientPromise from "../mongodb";
 
 export interface GenreSnapshot {
   userId: string;
-  timeRange: "short_term" | "medium_term" | "long_term";
+  timeRange: TimeRange;
   counts: Record<string, number>; // genre -> count for this day
   takenAt: Date;
 }

@@ -1,6 +1,8 @@
+import { timeRange } from "@/app/constants";
 import getSpotifyData from "@/lib/spotify/getSpotifyData";
+import { TimeRange } from "@/types";
 
-export type TimeKey = "long_term" | "medium_term";
+export type TimeKey = Extract<TimeRange, "long_term" | "medium_term">;
 
 export interface AnchorRankItem {
   id: string;
@@ -24,8 +26,8 @@ export async function buildRankAnchors(
   }
 
   const ranges: Array<{ key: TimeKey; label: string }> = [
-    { key: "long_term", label: "Long term" },
-    { key: "medium_term", label: "Medium term" },
+    { key: timeRange.long, label: "Long term" },
+    { key: timeRange.medium, label: "Medium term" },
   ];
 
   const responses = await Promise.all(
@@ -38,7 +40,7 @@ export async function buildRankAnchors(
     return map;
   });
 
-  const mediumIndex = ranges.findIndex((r) => r.key === "medium_term");
+  const mediumIndex = ranges.findIndex((r) => r.key === timeRange.medium);
   const mediumItems = (responses[mediumIndex] || { items: [] })
     .items as AnchorRankItem[];
 
@@ -58,8 +60,8 @@ export async function buildGenreAnchors(
   }
 
   const ranges: Array<{ key: TimeKey; label: string }> = [
-    { key: "long_term", label: "Long term" },
-    { key: "medium_term", label: "Medium term" },
+    { key: timeRange.long, label: "Long term" },
+    { key: timeRange.medium, label: "Medium term" },
   ];
 
   const responses = await Promise.all(

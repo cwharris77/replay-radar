@@ -1,5 +1,6 @@
 "use client";
 
+import { timeRange } from "@/app/constants";
 import { Artist, Track } from "@/types";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -19,7 +20,7 @@ export function useNextAuth() {
 
   const fetchSpotifyData = async (
     type: "artists" | "tracks",
-    timeRange: string = "short_term"
+    timeRangeValue: string = timeRange.short
   ) => {
     if (!session?.user?.accessToken) return;
 
@@ -28,7 +29,7 @@ export function useNextAuth() {
       setError(null);
 
       const response = await fetch(
-        `/api/spotify/top-data?type=${type}&time_range=${timeRange}`,
+        `/api/spotify/top-data?type=${type}&time_range=${timeRangeValue}`,
         {
           credentials: "include",
         }

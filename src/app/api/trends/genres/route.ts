@@ -1,7 +1,9 @@
+import { timeRange as timeRangeConst } from "@/app/constants";
 import { requireSession } from "@/lib/auth";
 import { getGenreSnapshotCollection } from "@/lib/models/GenreSnapshot";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
 import { buildGenreAnchors } from "@/lib/trends/anchors";
+import { TimeRange } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -12,10 +14,8 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const limit = Number(searchParams.get("limit") || 12);
     const maxSeries = Number(searchParams.get("maxSeries") || 5);
-    const timeRange = (searchParams.get("timeRange") || "medium_term") as
-      | "short_term"
-      | "medium_term"
-      | "long_term";
+    const timeRange = (searchParams.get("timeRange") ||
+      timeRangeConst.medium) as TimeRange;
 
     const collection = await getGenreSnapshotCollection();
 

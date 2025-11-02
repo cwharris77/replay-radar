@@ -1,9 +1,10 @@
+import { timeRange } from "@/app/constants";
 import { getGenreSnapshotCollection } from "@/lib/models/GenreSnapshot";
 import { getTopSnapshotCollection } from "@/lib/models/TopSnapshot";
 import { getUserCollection } from "@/lib/models/User";
 import getSpotifyData from "@/lib/spotify/getSpotifyData";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
-import { Artist } from "@/types";
+import { Artist, TimeRange } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -45,23 +46,17 @@ export async function GET(req: NextRequest) {
         );
       }
 
-      const timeRanges: ("short_term" | "medium_term" | "long_term")[] = [
-        "short_term",
-        "medium_term",
-        "long_term",
-      ];
-
-      for (const timeRange of timeRanges) {
+      for (const range of Object.values(timeRange) as TimeRange[]) {
         // Fetch artists and tracks separately for this timeRange
         const [artistsData, tracksData] = await Promise.all([
-          getSpotifyData({ type: "artists", timeRange, accessToken }),
-          getSpotifyData({ type: "tracks", timeRange, accessToken }),
+          getSpotifyData({ type: "artists", timeRange: range, accessToken }),
+          getSpotifyData({ type: "tracks", timeRange: range, accessToken }),
         ]);
 
         await topSnapshotCollection.insertOne({
           userId: user._id?.toString() || "",
           type: "artists",
-          timeRange,
+          timeRange: range,
           items: artistsData.items,
           takenAt: new Date(),
         });
@@ -69,7 +64,7 @@ export async function GET(req: NextRequest) {
         await topSnapshotCollection.insertOne({
           userId: user._id?.toString() || "",
           type: "tracks",
-          timeRange,
+          timeRange: range,
           items: tracksData.items,
           takenAt: new Date(),
         });
@@ -87,7 +82,7 @@ export async function GET(req: NextRequest) {
 
         await genreSnapshotCollection.insertOne({
           userId: user._id?.toString() || "",
-          timeRange,
+          timeRange: range,
           counts: Object.fromEntries(genreCounts),
           takenAt: new Date(),
         });
