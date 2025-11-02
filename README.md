@@ -118,16 +118,18 @@ npm run build
    - `SPOTIFY_CLIENT_ID`
    - `SPOTIFY_CLIENT_SECRET`
    - `MONGODB_URI`
-   - `NEXTAUTH_URL` (optional - only needed for production. Preview URLs are auto-detected)
+   - `NEXTAUTH_URL` - **Must be set to your production URL** (e.g., `https://your-app.vercel.app`)
+     - This is used as the static callback URL for Spotify OAuth
+     - Preview deployments will automatically redirect back to their original URL after authentication
    - `NEXTAUTH_SECRET`
 
 4. **Configure Spotify OAuth Redirect URI**:
 
    - Go to your [Spotify App Settings](https://developer.spotify.com/dashboard)
-   - Add redirect URIs to "Redirect URIs". The app automatically detects preview URLs, so you can use wildcards:
-     - Production: `https://your-domain.vercel.app/api/auth/callback/spotify`
-     - Preview environments (wildcard): `https://*-*.vercel.app/api/auth/callback/spotify`
-   - Note: The code automatically uses `VERCEL_URL` for preview environments, so you only need to configure the wildcard pattern once
+   - Add **only one redirect URI**:
+     - `https://your-production-domain.vercel.app/api/auth/callback/spotify`
+   - **Important**: Spotify doesn't support wildcard URLs, so you only need this one static URL
+   - The code automatically handles redirecting back to preview URLs after authentication completes
 
 5. **Deploy**:
    - Vercel will automatically deploy on every push to your main branch

@@ -3,10 +3,21 @@ import { NextAuthOptions } from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 
 /**
+ * Get the production base URL for the static callback.
+ * This should be your production Vercel URL (e.g., https://your-app.vercel.app)
+ */
+export function getProductionBaseUrl(): string {
+  return (
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "https://your-app.vercel.app"
+  );
+}
+
+/**
  * Create auth options for NextAuth.
- * Note: NextAuth v4 in App Router automatically detects the callback URL
- * from the request headers, so we don't need to explicitly set it here.
- * The redirect URI sent to Spotify is automatically constructed from the request URL.
+ * Uses a static callback URL (production URL) and redirects back to the original origin
+ * after authentication. This allows preview deployments to work without wildcard redirect URIs.
  */
 export function createAuthOptions(): NextAuthOptions {
   return {
@@ -33,6 +44,49 @@ export function createAuthOptions(): NextAuthOptions {
         session.user.refreshToken = token.refreshToken as string | undefined;
         session.user.expiresAt = token.expiresAt as number | undefined;
         return session;
+      },
+      /**
+       * Redirect callback: After authentication, check for stored origin cookie
+       * and redirect back to the original preview URL if present.
+       */
+      async redirect({ url, baseUrl }) {
+        // Try to read the cookie to get the original origin
+        // Note: In App Router, we need to use dynamic import for cookies
+        try {
+          const { cookies } = await import("next/headers");
+          const cookieStore = await cookies();
+          const originalOrigin = cookieStore.get("auth_original_origin")?.value;
+
+          if (originalOrigin) {
+            // If we have an original origin and the redirect URL contains the base URL,
+            // replace it with the original origin to send user back to preview URL
+            if (url.startsWith(baseUrl)) {
+              const path = url.replace(baseUrl, "");
+              return `${originalOrigin}${path}`;
+            }
+
+            // If url is relative, prepend original origin
+            if (url.startsWith("/")) {
+              return `${originalOrigin}${url}`;
+            }
+          }
+        } catch (error) {
+          // If we can't read cookies, fall through to default behavior
+          console.error("Error reading auth_original_origin cookie:", error);
+        }
+
+        // Default behavior: redirect to the callbackUrl if it's relative
+        if (url.startsWith("/")) {
+          return `${baseUrl}${url}`;
+        }
+
+        // If url is absolute and on same origin, allow it
+        if (url.startsWith(baseUrl)) {
+          return url;
+        }
+
+        // Default: redirect to base URL
+        return baseUrl;
       },
     },
     events: {
