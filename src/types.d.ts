@@ -53,7 +53,7 @@ export interface SpotifyResponse {
   items: Artist[] | Track[];
 }
 
-export type TimeRange = "short_term" | "medium_term" | "long_term";
+export type { TimeRange } from "@/app/constants";
 export type SpotifyDataType = "artists" | "tracks";
 
 export interface SpotifyRefreshSuccessResponse {

@@ -1,3 +1,4 @@
+import { timeRange as timeRangeConst } from "@/app/constants";
 import { requireSession } from "@/lib/auth";
 import { SpotifyCache } from "@/lib/models/SpotifyCache";
 import fetchFromSpotify from "@/lib/spotify/getSpotifyData";
@@ -14,7 +15,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const typeParam = searchParams.get("type");
     const timeRange = (searchParams.get("time_range") ||
-      "short_term") as TimeRange;
+      timeRangeConst.short) as TimeRange;
 
     if (!typeParam || !isValidType(typeParam)) {
       return NextResponse.json(
