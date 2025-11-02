@@ -1,6 +1,6 @@
 "use client";
 
-import { TIME_RANGES } from "@/app/constants";
+import { TIME_RANGES, timeRange } from "@/app/constants";
 import TiltedCard from "@/components/TiltedCard";
 import { Track } from "@/types";
 import { useState } from "react";
@@ -10,7 +10,7 @@ import Loading from "./Loading";
 
 export default function TopTracks() {
   const { topTracks, isLoading, authError, fetchSpotifyData } = useNextAuth();
-  const [selectedRange, setSelectedRange] = useState<string>("long_term");
+  const [selectedRange, setSelectedRange] = useState<string>(timeRange.short);
 
   const handleRangeChange = (range: string) => {
     setSelectedRange(range);
