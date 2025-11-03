@@ -3,14 +3,27 @@
 import { TIME_RANGES, timeRange } from "@/app/constants";
 import TiltedCard from "@/components/TiltedCard";
 import { Artist } from "@/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNextAuth } from "../hooks/useNextAuth";
 import ErrorCard from "./ErrorCard";
 import Loading from "./Loading";
 
 export default function TopArtists() {
-  const { topArtists, isLoading, authError, fetchSpotifyData } = useNextAuth();
+  const {
+    topArtists,
+    isLoading,
+    authError,
+    fetchSpotifyData,
+    isAuthenticated,
+  } = useNextAuth();
   const [selectedRange, setSelectedRange] = useState<string>(timeRange.short);
+
+  // Fetch artist data once on page load when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchSpotifyData("artists", selectedRange);
+    }
+  }, [isAuthenticated]);
 
   const handleRangeChange = (range: string) => {
     setSelectedRange(range);

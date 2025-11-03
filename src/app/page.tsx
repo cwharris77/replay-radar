@@ -1,6 +1,6 @@
 "use client";
 import { Artist } from "@/types";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import About from "./components/About";
 import DashboardSummary from "./components/DashboardSummary";
 import ErrorDisplay from "./components/ErrorDisplay";
@@ -9,8 +9,24 @@ import { useNextAuth } from "./hooks/useNextAuth";
 import { createDefaultArtist } from "./utils/defaults";
 
 export default function Home() {
-  const { isAuthenticated, isLoading, topArtists, topTracks, recentlyPlayed } =
-    useNextAuth();
+  const {
+    isAuthenticated,
+    isLoading,
+    topArtists,
+    topTracks,
+    recentlyPlayed,
+    fetchSpotifyData,
+    fetchRecentlyPlayed,
+  } = useNextAuth();
+
+  // Fetch artist data once on page load when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchSpotifyData("artists");
+      fetchSpotifyData("tracks");
+      fetchRecentlyPlayed();
+    }
+  }, [isAuthenticated]);
 
   const topArtist: Artist = topArtists[0] || createDefaultArtist();
 
