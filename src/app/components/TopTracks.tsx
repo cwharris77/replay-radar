@@ -3,14 +3,22 @@
 import { TIME_RANGES, timeRange } from "@/app/constants";
 import TiltedCard from "@/components/TiltedCard";
 import { Track } from "@/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNextAuth } from "../hooks/useNextAuth";
 import ErrorCard from "./ErrorCard";
 import Loading from "./Loading";
 
 export default function TopTracks() {
-  const { topTracks, isLoading, authError, fetchSpotifyData } = useNextAuth();
+  const { topTracks, isLoading, authError, fetchSpotifyData, isAuthenticated } =
+    useNextAuth();
   const [selectedRange, setSelectedRange] = useState<string>(timeRange.short);
+
+  // Fetch tracks data once on page load when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchSpotifyData("tracks", selectedRange);
+    }
+  }, [isAuthenticated]);
 
   const handleRangeChange = (range: string) => {
     setSelectedRange(range);
