@@ -1,5 +1,5 @@
 import { timeRange as timeRangeConst } from "@/app/constants";
-import { requireSession } from "@/lib/auth";
+import { auth } from "@/auth";
 import {
   getArtistsSnapshotCollection,
   getTracksSnapshotCollection,
@@ -16,8 +16,10 @@ export async function GET(
   { params }: { params: Promise<{ type: string }> }
 ) {
   try {
-    const session = await requireSession();
-    if (session instanceof NextResponse) return session;
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const { type } = await params;
     if (type !== "artists" && type !== "tracks") {

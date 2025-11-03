@@ -1,5 +1,5 @@
 import { timeRange } from "@/app/constants";
-import { requireSession } from "@/lib/auth";
+import { auth } from "@/auth";
 import {
   getArtistsSnapshotCollection,
   getTracksSnapshotCollection,
@@ -10,9 +10,11 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const session = await requireSession();
+    const session = await auth();
 
-    if (session instanceof NextResponse) return session;
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const userId = session.user.id;
     const timeRangeValue: TimeRange = timeRange.short;

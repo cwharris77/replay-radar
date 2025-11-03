@@ -1,5 +1,5 @@
 import { timeRange as timeRangeConst } from "@/app/constants";
-import { requireSession } from "@/lib/auth";
+import { auth } from "@/auth";
 import { SpotifyCache } from "@/lib/models/SpotifyCache";
 import fetchFromSpotify from "@/lib/spotify/getSpotifyData";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
@@ -8,9 +8,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await auth();
 
-    if (session instanceof NextResponse) return session;
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const { searchParams } = new URL(req.url);
     const typeParam = searchParams.get("type");

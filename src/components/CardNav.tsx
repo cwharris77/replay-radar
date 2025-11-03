@@ -1,8 +1,7 @@
+import { login, logout } from "@/lib/actions/auth";
 import { gsap } from "gsap";
-import React, { useLayoutEffect, useRef, useState } from "react";
-// use your own icon import if react-icons is not available
-import { signIn, signOut } from "next-auth/react";
 import Image from "next/image";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 
 type CardNavLink = {
@@ -209,7 +208,7 @@ const CardNav: React.FC<CardNavProps> = ({
 
           {!isAuthenticated ? (
             <button
-              onClick={() => signIn("spotify")}
+              onClick={() => login()}
               type='button'
               className='card-nav-cta-button hidden md:inline-flex border-0 rounded-[calc(0.75rem-0.2rem)] px-4 h-[90%] font-medium cursor-pointer transition-colors duration-300'
               style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
@@ -218,7 +217,7 @@ const CardNav: React.FC<CardNavProps> = ({
             </button>
           ) : (
             <button
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => logout()}
               type='button'
               className='card-nav-cta-button hidden md:inline-flex border-0 rounded-[calc(0.75rem-0.2rem)] px-4 h-[90%] font-medium cursor-pointer transition-colors duration-300'
               style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}

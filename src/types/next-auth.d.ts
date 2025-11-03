@@ -5,6 +5,7 @@ declare module "next-auth" {
     user: {
       id: string;
       name?: string | null;
+      email?: string | null;
       image?: string | null;
       accessToken?: string;
       refreshToken?: string;
@@ -20,5 +21,6 @@ declare module "next-auth" {
     accessToken?: string;
     refreshToken?: string;
     expiresAt?: number;
+    id?: string;
   }
 }
