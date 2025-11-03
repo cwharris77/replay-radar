@@ -20,13 +20,22 @@ export function getProductionBaseUrl(): string {
  * after authentication. This allows preview deployments to work without wildcard redirect URIs.
  */
 export function createAuthOptions(): NextAuthOptions {
+  const productionBaseUrl = getProductionBaseUrl();
+  const staticCallbackUrl = `${productionBaseUrl}/api/auth/callback/spotify`;
+
   return {
     providers: [
       SpotifyProvider({
         clientId: process.env.SPOTIFY_CLIENT_ID!,
         clientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
-        authorization:
-          "https://accounts.spotify.com/authorize?scope=user-read-recently-played user-top-read user-read-private",
+        authorization: {
+          url: "https://accounts.spotify.com/authorize",
+          params: {
+            scope: "user-read-recently-played user-top-read user-read-private",
+            // Explicitly set the redirect_uri to the static production URL
+            redirect_uri: staticCallbackUrl,
+          },
+        },
       }),
     ],
     callbacks: {
