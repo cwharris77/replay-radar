@@ -57,18 +57,33 @@ export async function GET(req: NextRequest) {
           getSpotifyData({ type: "tracks", timeRange: range, accessToken }),
         ]);
 
+        // Create a normalized date at midnight UTC for the current UTC day
+        // This ensures consistent date storage regardless of server timezone
+        const now = new Date();
+        const takenAt = new Date(
+          Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate(),
+            0,
+            0,
+            0,
+            0
+          )
+        );
+
         await artistsSnapshotCollection.insertOne({
           userId: user._id?.toString() || "",
           timeRange: range,
           items: artistsData.items,
-          takenAt: new Date(),
+          takenAt,
         });
 
         await tracksSnapshotCollection.insertOne({
           userId: user._id?.toString() || "",
           timeRange: range,
           items: tracksData.items,
-          takenAt: new Date(),
+          takenAt,
         });
 
         // Compute genre counts from artists
@@ -86,7 +101,7 @@ export async function GET(req: NextRequest) {
           userId: user._id?.toString() || "",
           timeRange: range,
           counts: Object.fromEntries(genreCounts),
-          takenAt: new Date(),
+          takenAt,
         });
       }
     }
