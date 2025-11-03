@@ -80,11 +80,14 @@ export function useNextAuth() {
   };
 
   const login = () => {
-    const callbackUrl =
-      process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI || window.location.origin;
+    // Store the current origin in a cookie before initiating OAuth
+    // This allows the callback handler to redirect back to the preview URL
+    const currentOrigin = window.location.origin;
+    document.cookie = `auth_original_origin=${currentOrigin}; path=/; max-age=600; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
+    
     // Force both login and consent to ensure password entry
     signIn("spotify", {
-      callbackUrl,
+      callbackUrl: "/",
       prompt: "login consent",
     });
   };

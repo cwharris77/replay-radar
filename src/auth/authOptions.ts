@@ -2,66 +2,141 @@ import { getUserCollection, SpotifyTokens } from "@/lib/models/User";
 import { NextAuthOptions } from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 
-export const authOptions: NextAuthOptions = {
-  providers: [
-    SpotifyProvider({
-      clientId: process.env.SPOTIFY_CLIENT_ID!,
-      clientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
-      authorization:
-        "https://accounts.spotify.com/authorize?scope=user-read-recently-played user-top-read user-read-private",
-    }),
-  ],
-  callbacks: {
-    async jwt({ token, account }) {
-      if (account) {
-        token.accessToken = account.access_token;
-        token.refreshToken = account.refresh_token;
-        token.expiresAt = account.expires_at! * 1000;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      session.user.id = token.sub as string;
-      session.user.accessToken = token.accessToken as string | undefined;
-      session.user.refreshToken = token.refreshToken as string | undefined;
-      session.user.expiresAt = token.expiresAt as number | undefined;
-      return session;
-    },
-  },
-  events: {
-    async signIn({ user, account }) {
-      if (!account) return;
+/**
+ * Get the production base URL for the static callback.
+ * This should be your production Vercel URL (e.g., https://your-app.vercel.app)
+ */
+export function getProductionBaseUrl(): string {
+  return (
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "https://your-app.vercel.app"
+  );
+}
 
-      const users = await getUserCollection();
+/**
+ * Create auth options for NextAuth.
+ * Uses a static callback URL (production URL) and redirects back to the original origin
+ * after authentication. This allows preview deployments to work without wildcard redirect URIs.
+ */
+export function createAuthOptions(): NextAuthOptions {
+  const productionBaseUrl = getProductionBaseUrl();
+  const staticCallbackUrl = `${productionBaseUrl}/api/auth/callback/spotify`;
 
-      // Calculate token expiration
-      const expiresAt = account.expires_at
-        ? account.expires_at * 1000
-        : Date.now() + 3600 * 1000; // fallback 1 hour
-
-      const spotify: SpotifyTokens = {
-        accessToken: account.access_token || "",
-        refreshToken: account.refresh_token || "",
-        expiresAt,
-      };
-
-      await users.updateOne(
-        { _id: user.id },
-        {
-          $set: {
-            name: user.name || undefined,
-            email: user.email || undefined,
-            spotify,
-            updatedAt: new Date(),
-          },
-          $setOnInsert: {
-            createdAt: new Date(),
+  return {
+    providers: [
+      SpotifyProvider({
+        clientId: process.env.SPOTIFY_CLIENT_ID!,
+        clientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
+        authorization: {
+          url: "https://accounts.spotify.com/authorize",
+          params: {
+            scope: "user-read-recently-played user-top-read user-read-private",
+            // Explicitly set the redirect_uri to the static production URL
+            redirect_uri: staticCallbackUrl,
           },
         },
-        { upsert: true }
-      );
+      }),
+    ],
+    callbacks: {
+      async jwt({ token, account }) {
+        if (account) {
+          token.accessToken = account.access_token;
+          token.refreshToken = account.refresh_token;
+          token.expiresAt = account.expires_at! * 1000;
+        }
+        return token;
+      },
+      async session({ session, token }) {
+        session.user.id = token.sub as string;
+        session.user.accessToken = token.accessToken as string | undefined;
+        session.user.refreshToken = token.refreshToken as string | undefined;
+        session.user.expiresAt = token.expiresAt as number | undefined;
+        return session;
+      },
+      /**
+       * Redirect callback: After authentication, check for stored origin cookie
+       * and redirect back to the original preview URL if present.
+       */
+      async redirect({ url, baseUrl }) {
+        // Try to read the cookie to get the original origin
+        // Note: In App Router, we need to use dynamic import for cookies
+        try {
+          const { cookies } = await import("next/headers");
+          const cookieStore = await cookies();
+          const originalOrigin = cookieStore.get("auth_original_origin")?.value;
+
+          if (originalOrigin) {
+            // If we have an original origin and the redirect URL contains the base URL,
+            // replace it with the original origin to send user back to preview URL
+            if (url.startsWith(baseUrl)) {
+              const path = url.replace(baseUrl, "");
+              return `${originalOrigin}${path}`;
+            }
+
+            // If url is relative, prepend original origin
+            if (url.startsWith("/")) {
+              return `${originalOrigin}${url}`;
+            }
+          }
+        } catch (error) {
+          // If we can't read cookies, fall through to default behavior
+          console.error("Error reading auth_original_origin cookie:", error);
+        }
+
+        // Default behavior: redirect to the callbackUrl if it's relative
+        if (url.startsWith("/")) {
+          return `${baseUrl}${url}`;
+        }
+
+        // If url is absolute and on same origin, allow it
+        if (url.startsWith(baseUrl)) {
+          return url;
+        }
+
+        // Default: redirect to base URL
+        return baseUrl;
+      },
     },
-  },
-};
+    events: {
+      async signIn({ user, account }) {
+        if (!account) return;
+
+        const users = await getUserCollection();
+
+        // Calculate token expiration
+        const expiresAt = account.expires_at
+          ? account.expires_at * 1000
+          : Date.now() + 3600 * 1000; // fallback 1 hour
+
+        const spotify: SpotifyTokens = {
+          accessToken: account.access_token || "",
+          refreshToken: account.refresh_token || "",
+          expiresAt,
+        };
+
+        await users.updateOne(
+          { _id: user.id },
+          {
+            $set: {
+              name: user.name || undefined,
+              email: user.email || undefined,
+              spotify,
+              updatedAt: new Date(),
+            },
+            $setOnInsert: {
+              createdAt: new Date(),
+            },
+          },
+          { upsert: true }
+        );
+      },
+    },
+  };
+}
+
+// Export a default instance for backwards compatibility
+// This uses the environment-based URL detection
+export const authOptions = createAuthOptions();
 
 export default authOptions;

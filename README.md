@@ -47,12 +47,14 @@ openssl rand -base64 32
 ## Local Development
 
 1. Clone the repository:
+
 ```bash
 git clone <your-repo-url>
 cd replay-radar
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
@@ -60,6 +62,7 @@ npm install
 3. Set up environment variables (see above)
 
 4. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -104,22 +107,29 @@ npm run build
 1. **Push your code to GitHub**
 
 2. **Import your project to Vercel**:
+
    - Go to [Vercel Dashboard](https://vercel.com/dashboard)
    - Click "Add New" → "Project"
    - Import your GitHub repository
 
 3. **Configure Environment Variables**:
    In Vercel project settings, add all required environment variables:
+
    - `SPOTIFY_CLIENT_ID`
    - `SPOTIFY_CLIENT_SECRET`
    - `MONGODB_URI`
-   - `NEXTAUTH_URL` (e.g., `https://your-domain.vercel.app`)
+   - `NEXTAUTH_URL` - **Must be set to your production URL** (e.g., `https://your-app.vercel.app`)
+     - This is used as the static callback URL for Spotify OAuth
+     - Preview deployments will automatically redirect back to their original URL after authentication
    - `NEXTAUTH_SECRET`
 
 4. **Configure Spotify OAuth Redirect URI**:
+
    - Go to your [Spotify App Settings](https://developer.spotify.com/dashboard)
-   - Add your Vercel deployment URL to "Redirect URIs":
-     - `https://your-domain.vercel.app/api/auth/callback/spotify`
+   - Add **only one redirect URI**:
+     - `https://your-production-domain.vercel.app/api/auth/callback/spotify`
+   - **Important**: Spotify doesn't support wildcard URLs, so you only need this one static URL
+   - The code automatically handles redirecting back to preview URLs after authentication completes
 
 5. **Deploy**:
    - Vercel will automatically deploy on every push to your main branch
