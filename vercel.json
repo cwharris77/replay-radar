@@ -3,10 +3,6 @@
     {
       "path": "/api/cron/top-snapshot",
       "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/cron/genre-snapshot",
-      "schedule": "0 0 * * *"
     }
   ]
 }

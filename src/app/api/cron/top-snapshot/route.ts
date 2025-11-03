@@ -1,6 +1,9 @@
 import { timeRange } from "@/app/constants";
 import { getGenreSnapshotCollection } from "@/lib/models/GenreSnapshot";
-import { getTopSnapshotCollection } from "@/lib/models/TopSnapshot";
+import {
+  getArtistsSnapshotCollection,
+  getTracksSnapshotCollection,
+} from "@/lib/models/TopSnapshot";
 import { getUserCollection } from "@/lib/models/User";
 import getSpotifyData from "@/lib/spotify/getSpotifyData";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
@@ -18,7 +21,8 @@ export async function GET(req: NextRequest) {
     }
 
     const usersCollection = await getUserCollection();
-    const topSnapshotCollection = await getTopSnapshotCollection();
+    const artistsSnapshotCollection = await getArtistsSnapshotCollection();
+    const tracksSnapshotCollection = await getTracksSnapshotCollection();
     const genreSnapshotCollection = await getGenreSnapshotCollection();
 
     const users = await usersCollection.find({}).toArray();
@@ -53,17 +57,15 @@ export async function GET(req: NextRequest) {
           getSpotifyData({ type: "tracks", timeRange: range, accessToken }),
         ]);
 
-        await topSnapshotCollection.insertOne({
+        await artistsSnapshotCollection.insertOne({
           userId: user._id?.toString() || "",
-          type: "artists",
           timeRange: range,
           items: artistsData.items,
           takenAt: new Date(),
         });
 
-        await topSnapshotCollection.insertOne({
+        await tracksSnapshotCollection.insertOne({
           userId: user._id?.toString() || "",
-          type: "tracks",
           timeRange: range,
           items: tracksData.items,
           takenAt: new Date(),

@@ -1,6 +1,9 @@
 import { timeRange } from "@/app/constants";
 import { requireSession } from "@/lib/auth";
-import { getTopSnapshotCollection } from "@/lib/models/TopSnapshot";
+import {
+  getArtistsSnapshotCollection,
+  getTracksSnapshotCollection,
+} from "@/lib/models/TopSnapshot";
 import fetchFromSpotify from "@/lib/spotify/getSpotifyData";
 import { SpotifyDataType, TimeRange } from "@/types";
 import { NextResponse } from "next/server";
@@ -14,7 +17,8 @@ export async function GET() {
     const userId = session.user.id;
     const timeRangeValue: TimeRange = timeRange.short;
     const types: SpotifyDataType[] = ["artists", "tracks"];
-    const topSnapshotCollection = await getTopSnapshotCollection();
+    const artistsSnapshotCollection = await getArtistsSnapshotCollection();
+    const tracksSnapshotCollection = await getTracksSnapshotCollection();
 
     for (const type of types) {
       const data = await fetchFromSpotify({
@@ -23,9 +27,14 @@ export async function GET() {
         accessToken: session.user.accessToken,
       });
 
-      await topSnapshotCollection.insertOne({
+      // Use the appropriate collection based on type
+      const collection =
+        type === "artists"
+          ? artistsSnapshotCollection
+          : tracksSnapshotCollection;
+
+      await collection.insertOne({
         userId,
-        type: "artists",
         timeRange: timeRangeValue,
         items: data.items,
         takenAt: new Date(),
