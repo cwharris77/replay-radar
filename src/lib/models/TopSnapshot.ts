@@ -17,14 +17,27 @@ export interface TopItem {
 export interface TopSnapshot {
   _id?: ObjectId;
   userId: string;
-  type: "artists" | "tracks";
   timeRange: TimeRange;
   items: TopItem[];
   takenAt: Date;
 }
 
-export async function getTopSnapshotCollection() {
+/**
+ * Get the artists snapshot collection.
+ * Separated from tracks for better query performance and clarity.
+ */
+export async function getArtistsSnapshotCollection() {
   const client = await clientPromise;
   const db = client.db(process.env.MONGO_DB_NAME);
-  return db.collection<TopSnapshot>("topSnapshots");
+  return db.collection<TopSnapshot>("artistsSnapshots");
+}
+
+/**
+ * Get the tracks snapshot collection.
+ * Separated from artists for better query performance and clarity.
+ */
+export async function getTracksSnapshotCollection() {
+  const client = await clientPromise;
+  const db = client.db(process.env.MONGO_DB_NAME);
+  return db.collection<TopSnapshot>("tracksSnapshots");
 }

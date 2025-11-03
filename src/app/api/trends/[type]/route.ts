@@ -1,6 +1,9 @@
 import { timeRange as timeRangeConst } from "@/app/constants";
 import { requireSession } from "@/lib/auth";
-import { getTopSnapshotCollection } from "@/lib/models/TopSnapshot";
+import {
+  getArtistsSnapshotCollection,
+  getTracksSnapshotCollection,
+} from "@/lib/models/TopSnapshot";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
 import { buildRankAnchors } from "@/lib/trends/anchors";
 import { TimeRange } from "@/types";
@@ -29,7 +32,11 @@ export async function GET(
     const timeRange = (searchParams.get("timeRange") ||
       timeRangeConst.medium) as TimeRange;
 
-    const collection = await getTopSnapshotCollection();
+    // Use the appropriate collection based on type
+    const collection =
+      typeAsAllowed === "artists"
+        ? await getArtistsSnapshotCollection()
+        : await getTracksSnapshotCollection();
 
     // Ensure valid access token (refresh if expired)
     let accessToken = session.user.accessToken || "";
@@ -49,9 +56,10 @@ export async function GET(
       }
     }
 
-    // Get most recent N snapshots for this user/type/timeRange
+    // Get most recent N snapshots for this user/timeRange
+    // No need to filter by type since we're using separate collections
     const snapshots = await collection
-      .find({ userId: session.user.id, type: typeAsAllowed, timeRange })
+      .find({ userId: session.user.id, timeRange })
       .sort({ takenAt: -1 })
       .limit(limit)
       .toArray();
