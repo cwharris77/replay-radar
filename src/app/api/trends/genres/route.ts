@@ -53,8 +53,9 @@ export async function GET(req: NextRequest) {
     }));
 
     const chronological = [...snapshots].reverse();
+    // Send ISO date strings - client will format in user's local timezone
     const snapshotLabels = chronological.map((s) =>
-      new Date(s.takenAt).toLocaleDateString()
+      new Date(s.takenAt).toISOString()
     );
     const labels = [...anchors.map((a) => a.label), ...snapshotLabels];
 

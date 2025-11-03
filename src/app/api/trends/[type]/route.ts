@@ -105,9 +105,10 @@ export async function GET(
 
     // Reverse to chronological order and prepend anchors
     const chronological = [...snapshots].reverse();
+    // Send ISO date strings - client will format in user's local timezone
     const labels = [
       ...anchorLabels,
-      ...chronological.map((s) => new Date(s.takenAt).toLocaleDateString()),
+      ...chronological.map((s) => new Date(s.takenAt).toISOString()),
     ];
 
     // Build rank map per snapshot: id -> rank (1-based)

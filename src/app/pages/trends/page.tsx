@@ -56,7 +56,31 @@ export default function TrendsPage() {
           throw new Error(errorData.error || "Failed to load trends");
         }
         const json = (await res.json()) as TrendsResponse;
-        setData(json);
+
+        // Format dates in user's local timezone
+        // ISO date strings from API are converted to user's local date format
+        const formattedLabels = json.labels.map((label) => {
+          // Check if label is an ISO date string (format: YYYY-MM-DDTHH:mm:ss.sssZ)
+          if (label.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
+            try {
+              const date = new Date(label);
+              if (!isNaN(date.getTime())) {
+                // Format in user's local timezone
+                return date.toLocaleDateString(undefined, {
+                  year: "2-digit",
+                  month: "short",
+                  day: "numeric",
+                });
+              }
+            } catch {
+              // If parsing fails, return original (e.g., "Long term", "Medium term")
+            }
+          }
+          // Return non-date labels as-is (anchor labels like "Long term")
+          return label;
+        });
+
+        setData({ ...json, labels: formattedLabels });
       } catch (e) {
         if ((e as Error).name === "AbortError") return;
         setError((e as Error).message);
