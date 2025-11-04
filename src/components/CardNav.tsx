@@ -45,16 +45,18 @@ const CardNav: React.FC<CardNavProps> = ({
 }) => {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
   const navRef = useRef<HTMLDivElement | null>(null);
   const cardsRef = useRef<HTMLDivElement[]>([]);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
+
+  const isMobile = () => window.matchMedia("(max-width: 768px)").matches;
 
   const calculateHeight = () => {
     const navEl = navRef.current;
     if (!navEl) return 260;
 
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    if (isMobile) {
+    if (isMobile()) {
       const contentEl = navEl.querySelector(".card-nav-content") as HTMLElement;
       if (contentEl) {
         const wasVisible = contentEl.style.visibility;
@@ -107,6 +109,17 @@ const CardNav: React.FC<CardNavProps> = ({
 
     return tl;
   };
+
+  useLayoutEffect(() => {
+    setIsMobileView(isMobile());
+
+    const handleResize = () => {
+      setIsMobileView(isMobile());
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useLayoutEffect(() => {
     const tl = createTimeline();
@@ -264,6 +277,46 @@ const CardNav: React.FC<CardNavProps> = ({
               </div>
             </div>
           ))}
+
+          {/* Mobile-only auth card */}
+          {isMobileView && (
+            <div
+              className='nav-card select-none relative flex flex-col gap-2 p-[12px_16px] rounded-[calc(0.75rem-0.2rem)] min-w-0 flex-[1_1_auto] h-auto min-h-[60px]'
+              ref={setCardRef(items.length)}
+              style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
+            >
+              <div className='nav-card-label font-normal tracking-[-0.5px] text-[18px]'>
+                Account
+              </div>
+              <div className='nav-card-links mt-auto flex flex-col gap-[2px]'>
+                {!isAuthenticated ? (
+                  <button
+                    onClick={() => signIn("spotify")}
+                    className='nav-card-link inline-flex items-center gap-[6px] no-underline cursor-pointer transition-opacity duration-300 hover:opacity-75 text-[15px] bg-transparent border-0 p-0 text-left'
+                    style={{ color: buttonTextColor }}
+                  >
+                    <GoArrowUpRight
+                      className='nav-card-link-icon shrink-0'
+                      aria-hidden='true'
+                    />
+                    Login
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                    className='nav-card-link inline-flex items-center gap-[6px] no-underline cursor-pointer transition-opacity duration-300 hover:opacity-75 text-[15px] bg-transparent border-0 p-0 text-left'
+                    style={{ color: buttonTextColor }}
+                  >
+                    <GoArrowUpRight
+                      className='nav-card-link-icon shrink-0'
+                      aria-hidden='true'
+                    />
+                    Logout
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </nav>
     </div>
