@@ -18,6 +18,6 @@ export interface User {
 
 export async function getUserCollection(): Promise<Collection<User>> {
   const client = await clientPromise;
-  const db = client.db(process.env.MONGODB_DB_NAME || "replay-radar-dev");
+  const db = client.db(process.env.MONGODB_DB_NAME);
   return db.collection<User>("users");
 }

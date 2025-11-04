@@ -12,6 +12,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         params: {
           scope: "user-read-recently-played user-top-read user-read-private",
         },
+        state: crypto.randomUUID(),
       },
     }),
   ],
