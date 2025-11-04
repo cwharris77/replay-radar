@@ -57,20 +57,8 @@ export async function GET(req: NextRequest) {
           getSpotifyData({ type: "tracks", timeRange: range, accessToken }),
         ]);
 
-        // Create a normalized date at midnight UTC for the current UTC day
-        // This ensures consistent date storage regardless of server timezone
-        const now = new Date();
-        const takenAt = new Date(
-          Date.UTC(
-            now.getUTCFullYear(),
-            now.getUTCMonth(),
-            now.getUTCDate(),
-            0,
-            0,
-            0,
-            0
-          )
-        );
+        // Store the current timestamp when cron runs (8am UTC = ~midnight local)
+        const takenAt = new Date();
 
         await artistsSnapshotCollection.insertOne({
           userId: user._id?.toString() || "",

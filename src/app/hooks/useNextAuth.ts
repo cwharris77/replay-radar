@@ -1,9 +1,9 @@
 "use client";
 
-import { timeRange } from "@/app/constants";
+import { TimeRange, timeRange, TopDataType } from "@/app/constants";
 import { Artist, Track } from "@/types";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { isArtist, isTrack } from "../utils/defaults";
 
 interface SpotifyData {
@@ -18,42 +18,42 @@ export function useNextAuth() {
   const [error, setError] = useState<string | null>(null);
   const [recentlyPlayed, setRecentlyPlayed] = useState<Track[]>([]);
 
-  const fetchSpotifyData = async (
-    type: "artists" | "tracks",
-    timeRangeValue: string = timeRange.short
-  ) => {
-    if (!session?.user?.accessToken) return;
+  const fetchSpotifyData = useCallback(
+    async (type: TopDataType, timeRangeValue: TimeRange = timeRange.short) => {
+      if (!session?.user?.accessToken) return;
 
-    try {
-      setLoading(true);
-      setError(null);
+      try {
+        setLoading(true);
+        setError(null);
 
-      const response = await fetch(
-        `/api/spotify/top-data?type=${type}&time_range=${timeRangeValue}`,
-        {
-          credentials: "include",
+        const response = await fetch(
+          `/api/spotify/top-data?type=${type}&time_range=${timeRangeValue}`,
+          {
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
         }
-      );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
+        const data: SpotifyData = await response.json();
+
+        if (type === "artists") {
+          const artists = data.items.filter(isArtist);
+          setTopArtists(artists);
+        } else {
+          const tracks = data.items.filter(isTrack);
+          setTopTracks(tracks);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
       }
-
-      const data: SpotifyData = await response.json();
-
-      if (type === "artists") {
-        const artists = data.items.filter(isArtist);
-        setTopArtists(artists);
-      } else {
-        const tracks = data.items.filter(isTrack);
-        setTopTracks(tracks);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [session?.user?.accessToken]
+  );
 
   const fetchRecentlyPlayed = async () => {
     if (!session?.user?.accessToken) return;

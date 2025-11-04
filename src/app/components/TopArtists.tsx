@@ -1,12 +1,13 @@
 "use client";
 
-import { TIME_RANGES, timeRange } from "@/app/constants";
+import { TimeRange, timeRange, topDataTypes } from "@/app/constants";
 import TiltedCard from "@/components/TiltedCard";
 import { Artist } from "@/types";
 import { useEffect, useState } from "react";
 import { useNextAuth } from "../hooks/useNextAuth";
 import ErrorCard from "./ErrorCard";
 import Loading from "./Loading";
+import TimeRangeSelector from "./TimeRangeSelector";
 
 export default function TopArtists() {
   const {
@@ -16,18 +17,20 @@ export default function TopArtists() {
     fetchSpotifyData,
     isAuthenticated,
   } = useNextAuth();
-  const [selectedRange, setSelectedRange] = useState<string>(timeRange.short);
+  const [selectedRange, setSelectedRange] = useState<TimeRange>(
+    timeRange.short
+  );
 
   // Fetch artist data once on page load when authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      fetchSpotifyData("artists", selectedRange);
+      fetchSpotifyData(topDataTypes.artists, selectedRange);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, selectedRange, fetchSpotifyData]);
 
-  const handleRangeChange = (range: string) => {
+  const handleRangeChange = (range: TimeRange) => {
     setSelectedRange(range);
-    fetchSpotifyData("artists", range);
+    fetchSpotifyData(topDataTypes.artists, range);
   };
 
   if (isLoading) {
@@ -42,21 +45,10 @@ export default function TopArtists() {
 
   return (
     <div className='max-w-full mx-auto'>
-      <div className='flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6 justify-center px-2 sm:px-4'>
-        {TIME_RANGES.map((range) => (
-          <button
-            key={range.value}
-            onClick={() => handleRangeChange(range.value)}
-            className={`min-w-[90px] px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-medium sm:font-semibold transition-all duration-200 border border-gray-700 text-sm sm:text-base ${
-              selectedRange === range.value
-                ? "bg-green-600 text-white shadow-lg"
-                : "bg-gray-800 text-gray-300 active:bg-green-700 hover:bg-green-700 active:scale-95"
-            }`}
-          >
-            {range.label}
-          </button>
-        ))}
-      </div>
+      <TimeRangeSelector
+        selectedRange={selectedRange}
+        onRangeChange={handleRangeChange}
+      />
       <div className='default-card-grid' data-testid='top-artists'>
         {artists.map((artist) => (
           <TiltedCard
