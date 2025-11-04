@@ -6,13 +6,15 @@ export const timeRange = {
 
 export type TimeRange = (typeof timeRange)[keyof typeof timeRange];
 
-export const userData = {
-  artists: "artists",
-  tracks: "tracks",
+export const topDataTypes = {
+  artists: "artists" as const,
+  tracks: "tracks" as const,
 };
 
+export type TopDataType = (typeof topDataTypes)[keyof typeof topDataTypes];
+
 export const TIME_RANGES = [
-  { label: "This Week", value: timeRange.short },
+  { label: "Last 4 Weeks", value: timeRange.short },
   { label: "Last 6 Months", value: timeRange.medium },
-  { label: "All Time", value: timeRange.long },
+  { label: "This Year", value: timeRange.long },
 ];

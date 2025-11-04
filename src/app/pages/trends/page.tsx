@@ -4,6 +4,7 @@ import ErrorCard from "@/app/components/ErrorCard";
 import Loading from "@/app/components/Loading";
 import LoginPrompt from "@/app/components/LoginPrompt";
 import TrendLineChart from "@/app/components/TrendLineChart";
+import { timeRange as timeRanges } from "@/app/constants";
 import { useNextAuth } from "@/app/hooks/useNextAuth";
 import { TimeRange } from "@/types";
 import { useEffect, useMemo, useState } from "react";
@@ -42,9 +43,12 @@ export default function TrendsPage() {
         setError(null);
         const endpoint =
           tab === "genres" ? "/api/trends/genres" : `/api/trends/${tab}`;
-        const res = await fetch(`${endpoint}?limit=12&maxSeries=5`, {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          `${endpoint}?limit=12&maxSeries=7&timeRange=${timeRanges.short}`,
+          {
+            signal: controller.signal,
+          }
+        );
         if (!res.ok) {
           if (res.status === 401) {
             setError("Authentication required. Please log in.");
