@@ -1,4 +1,4 @@
-import { requireSession } from "@/lib/auth";
+import { auth } from "@/auth";
 import { SpotifyCache } from "@/lib/models/SpotifyCache";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
 import { Track } from "@/types";
@@ -13,9 +13,11 @@ interface SpotifyRecentlyPlayedResponse {
 
 export async function GET() {
   try {
-    const session = await requireSession();
+    const session = await auth();
 
-    if (session instanceof NextResponse) return session;
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const userId = session.user.id;
 

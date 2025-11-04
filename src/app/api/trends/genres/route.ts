@@ -1,5 +1,5 @@
 import { timeRange as timeRangeConst } from "@/app/constants";
-import { requireSession } from "@/lib/auth";
+import { auth } from "@/auth";
 import { getGenreSnapshotCollection } from "@/lib/models/GenreSnapshot";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
 import { buildGenreAnchors } from "@/lib/trends/anchors";
@@ -8,8 +8,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await requireSession();
-    if (session instanceof NextResponse) return session;
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const { searchParams } = new URL(req.url);
     const limit = Number(searchParams.get("limit") || 12);

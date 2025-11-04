@@ -1,6 +1,6 @@
 "use client";
 
-import { useNextAuth } from "../hooks/useNextAuth";
+import { login } from "@/lib/actions/auth";
 
 interface LoginPromptProps {
   title?: string;
@@ -11,8 +11,6 @@ export default function LoginPrompt({
   title = "Login Required",
   message = "Please log in with your Spotify account to view this content.",
 }: LoginPromptProps) {
-  const { login } = useNextAuth();
-
   return (
     <div className='flex flex-col items-center justify-center min-h-[60vh] p-6 text-center'>
       <div className='bg-gray-900 border border-gray-800 rounded-xl p-8 max-w-md w-full'>
