@@ -1,5 +1,3 @@
-import { Client } from "@mocky-balboa/client";
-
 export const mockSession = {
   user: {
     id: "test-user",
@@ -42,36 +40,3 @@ export const mockTracks = [
     external_urls: { spotify: "https://spotify.com/track2" },
   },
 ];
-
-export function registerMocks(mocky: Client) {
-  // Session
-  mocky.route("**/api/auth/session", (route) => {
-    return route.fulfill({
-      status: 200,
-      body: JSON.stringify(mockSession),
-      headers: { "Content-Type": "application/json" },
-    });
-  });
-
-  // Top data
-  mocky.route("**/api/spotify/top-data**", (route) => {
-    const url = new URL(route.request.url);
-    const type = url.searchParams.get("type");
-    const data = type === "artists" ? mockArtists : mockTracks;
-
-    return route.fulfill({
-      status: 200,
-      body: JSON.stringify({ items: data }),
-      headers: { "Content-Type": "application/json" },
-    });
-  });
-
-  // Recently played
-  mocky.route("**/api/spotify/recently-played", (route) => {
-    return route.fulfill({
-      status: 200,
-      body: JSON.stringify([]),
-      headers: { "Content-Type": "application/json" },
-    });
-  });
-}
