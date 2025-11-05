@@ -1,20 +1,9 @@
-"use client";
-
-import Loading from "../../components/Loading";
+import { getServerAuthData } from "@/lib/serverAuth";
 import LoginPrompt from "../../components/LoginPrompt";
 import TopArtists from "../../components/TopArtists";
-import { useNextAuth } from "../../hooks/useNextAuth";
 
-export default function TopArtistsPage() {
-  const { isAuthenticated, isLoading } = useNextAuth();
-
-  if (isLoading) {
-    return (
-      <main className='min-h-screen text-white p-6'>
-        <Loading size='md' text='Loading...' />
-      </main>
-    );
-  }
+export default async function TopArtistsPage() {
+  const { isAuthenticated } = await getServerAuthData();
 
   if (!isAuthenticated) {
     return (

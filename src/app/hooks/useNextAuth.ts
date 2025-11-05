@@ -2,7 +2,7 @@
 
 import { TimeRange, timeRange, TopDataType } from "@/app/constants";
 import { Artist, Track } from "@/types";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useCallback, useState } from "react";
 import { isArtist, isTrack } from "../utils/defaults";
 
@@ -79,42 +79,6 @@ export function useNextAuth() {
     }
   };
 
-  const login = () => {
-    // Store the current origin in a cookie before initiating OAuth
-    // This allows the callback handler to redirect back to the preview URL
-    const currentOrigin = window.location.origin;
-    document.cookie = `auth_original_origin=${currentOrigin}; path=/; max-age=600; SameSite=Lax${
-      process.env.NODE_ENV === "production" ? "; Secure" : ""
-    }`;
-
-    // Force both login and consent to ensure password entry
-    signIn("spotify", {
-      callbackUrl: "/",
-      prompt: "login consent",
-    });
-  };
-
-  const logout = async () => {
-    const callbackUrl =
-      process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI || window.location.origin;
-
-    // First, try to revoke the Spotify token
-    try {
-      await fetch("/api/auth/revoke", {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch (error) {
-      console.error("Failed to revoke token:", error);
-    }
-
-    // Then clear the NextAuth session
-    signOut({
-      callbackUrl,
-      redirect: true,
-    });
-  };
-
   return {
     session,
     status,
@@ -123,8 +87,6 @@ export function useNextAuth() {
     authError: error,
     topArtists,
     topTracks,
-    login,
-    logout,
     fetchSpotifyData,
     fetchRecentlyPlayed,
     recentlyPlayed,
