@@ -1,9 +1,9 @@
-import { gsap } from "gsap";
-import React, { useLayoutEffect, useRef, useState } from "react";
-// use your own icon import if react-icons is not available
+"use client";
 import { login, logout } from "@/lib/actions/auth";
+import { gsap } from "gsap";
 import { signIn, signOut } from "next-auth/react";
 import Image from "next/image";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 
 type CardNavLink = {

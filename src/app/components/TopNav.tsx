@@ -1,8 +1,7 @@
-"use client";
-
+"use server";
 import CardNav from "@/components/CardNav";
+import { getServerAuthData } from "@/lib/serverAuth";
 import logo from "public/replay_radar_logo.svg";
-import { useNextAuth } from "../hooks/useNextAuth";
 
 const items = [
   {
@@ -29,10 +28,8 @@ const items = [
   },
 ];
 
-const TopNav = () => {
-  const { isAuthenticated, isLoading } = useNextAuth();
-
-  if (isLoading) return null;
+const TopNav = async () => {
+  const { isAuthenticated } = await getServerAuthData();
 
   const buttonBgColor = !isAuthenticated
     ? "var(--color-primary)"

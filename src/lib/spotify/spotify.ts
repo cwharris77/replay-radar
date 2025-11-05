@@ -1,6 +1,7 @@
 import { TimeRange, timeRange, TopDataType } from "@/app/constants";
 import { Artist, Track } from "@/types";
 import { Session } from "next-auth";
+import { refreshAccessToken } from "./refreshAccessToken";
 
 /**
  * Helper to call Spotify Web API.
@@ -27,8 +28,19 @@ export async function fetchSpotifyData({
   session: Session;
   timeRangeValue?: TimeRange;
 }): Promise<Artist[] | Track[]> {
-  const accessToken = session?.user?.accessToken;
+  let accessToken = session?.user?.accessToken;
   if (!accessToken) return [];
+
+  if (session.user.expiresAt && Date.now() > session.user.expiresAt) {
+    const { accessToken: refreshedAccessToken } = await refreshAccessToken(
+      session.user.refreshToken || ""
+    );
+
+    if (!refreshedAccessToken) {
+      return [];
+    }
+    accessToken = refreshedAccessToken;
+  }
 
   const endpoint = `https://api.spotify.com/v1/me/top/${type}?limit=10&time_range=${timeRangeValue}`;
   const data = await spotifyFetch<{ items: Artist[] | Track[] }>(
@@ -42,8 +54,19 @@ export async function fetchSpotifyData({
  * Fetch recently played tracks.
  */
 export async function fetchRecentlyPlayed(session: Session): Promise<Track[]> {
-  const accessToken = session?.user?.accessToken;
+  let accessToken = session?.user?.accessToken;
   if (!accessToken) return [];
+
+  if (session.user.expiresAt && Date.now() > session.user.expiresAt) {
+    const { accessToken: refreshedAccessToken } = await refreshAccessToken(
+      session.user.refreshToken || ""
+    );
+
+    if (!refreshedAccessToken) {
+      return [];
+    }
+    accessToken = refreshedAccessToken;
+  }
 
   const endpoint =
     "https://api.spotify.com/v1/me/player/recently-played?limit=20";

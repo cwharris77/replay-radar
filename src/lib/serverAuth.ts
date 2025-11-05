@@ -1,8 +1,8 @@
 import { topDataTypes } from "@/app/constants";
 import authOptions from "@/auth/authOptions";
+import { fetchRecentlyPlayed, fetchSpotifyData } from "@/lib/spotify/spotify";
 import { Artist, Track } from "@/types";
 import { getServerSession, Session } from "next-auth";
-import { fetchRecentlyPlayed, fetchSpotifyData } from "./spotify";
 
 export interface ServerAuthData {
   isAuthenticated: boolean;
