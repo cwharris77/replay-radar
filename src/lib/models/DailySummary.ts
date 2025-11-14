@@ -30,7 +30,6 @@ export async function getDailySummariesCollection(): Promise<
 
   const client = await clientPromise;
   const db: Db = client.db(process.env.MONGO_DB_NAME || "replay-radar-dev");
-
   const collection = db.collection<DailySummary>("daily_summaries");
 
   // Ensure indexes — fast upsert & lookups
