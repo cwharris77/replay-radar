@@ -12,6 +12,6 @@ export interface Play {
 
 export async function getPlayCollection(): Promise<Collection<Play>> {
   const client = await clientPromise;
-  const db = client.db(process.env.MONGODB_DB_NAME || "replay-radar-dev");
+  const db = client.db(process.env.MONGO_DB_NAME || "replay-radar-dev");
   return db.collection<Play>("plays");
 }
