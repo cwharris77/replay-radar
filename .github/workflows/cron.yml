@@ -1,0 +1,20 @@
+name: Cron Runner
+on:
+  schedule:
+    - cron: "*/10 * * * *" # every 10 minutes
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call fetch plays route
+        run: |
+          curl -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "https://replay-radar.vercel.app/api/cron/fetch-plays"
+      - name: Call aggregate-plays route
+        run: |
+          curl -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "https://replay-radar.vercel.app/api/cron/aggregate-plays"
