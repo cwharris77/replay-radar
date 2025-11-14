@@ -1,8 +1,9 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { getDailySummariesCollection } from "./models/DailySummary";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 /**
@@ -26,5 +27,28 @@ export function getBaseUrl(request?: Request | { headers: Headers }): string {
   }
 
   // Fall back to NEXTAUTH_URL or localhost
-  return process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  return (
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "http://localhost:3000"
+  );
+}
+
+export function toUserLocalDay(date: Date, timeZone: string): string {
+  const local = new Date(date.toLocaleString("en-US", { timeZone }));
+
+  return local.toISOString().slice(0, 10); // "YYYY-MM-DD"
+}
+
+export async function getDailySummary(userId: string, date: Date, tz: string) {
+  const summaries = await getDailySummariesCollection();
+
+  const dayKey = toUserLocalDay(date, tz);
+
+  return (
+    (await summaries.findOne({ userId, day: dayKey })) ?? {
+      totalMs: 0,
+      trackCount: 0,
+    }
+  );
 }

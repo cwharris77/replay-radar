@@ -14,6 +14,7 @@ export interface User {
   spotify: SpotifyTokens;
   createdAt?: Date;
   updatedAt?: Date;
+  timeZone?: string;
 }
 
 export async function getUserCollection(): Promise<Collection<User>> {

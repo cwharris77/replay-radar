@@ -53,7 +53,10 @@ export async function fetchSpotifyData({
 /**
  * Fetch recently played tracks.
  */
-export async function fetchRecentlyPlayed(session: Session): Promise<Track[]> {
+export async function fetchRecentlyPlayed(
+  session: Session,
+  limit: number = 20
+): Promise<Track[]> {
   let accessToken = session?.user?.accessToken;
   if (!accessToken) return [];
 
@@ -68,8 +71,7 @@ export async function fetchRecentlyPlayed(session: Session): Promise<Track[]> {
     accessToken = refreshedAccessToken;
   }
 
-  const endpoint =
-    "https://api.spotify.com/v1/me/player/recently-played?limit=20";
+  const endpoint = `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`;
   const data = await spotifyFetch<{
     items: { track: Track; played_at: string }[];
   }>(endpoint, accessToken);
