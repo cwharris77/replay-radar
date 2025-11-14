@@ -3,7 +3,7 @@ import { login, logout } from "@/lib/actions/auth";
 import { gsap } from "gsap";
 import { signIn, signOut } from "next-auth/react";
 import Image from "next/image";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 
 type CardNavLink = {
@@ -176,6 +176,12 @@ const CardNav: React.FC<CardNavProps> = ({
   const setCardRef = (i: number) => (el: HTMLDivElement | null) => {
     if (el) cardsRef.current[i] = el;
   };
+
+  // set timeZone cookie for daily listening time calculations
+  useEffect(() => {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    document.cookie = `user_timezone=${tz}; path=/; Secure; SameSite=Lax`;
+  }, []);
 
   return (
     <div
