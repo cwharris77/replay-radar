@@ -6,15 +6,44 @@ on:
 
 jobs:
   run:
+    environment: Production
     runs-on: ubuntu-latest
+    env:
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+      MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
     steps:
-      - name: Call fetch plays route
+      - name: Call fetch-plays route and fail on error
         run: |
-          curl -X GET \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            "https://replay-radar.vercel.app/api/cron/fetch-plays"
-      - name: Call aggregate-plays route
+          echo "Calling fetch-plays..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "https://replay-radar.vercel.app/api/cron/fetch-plays")
+
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          STATUS=$(echo "$RESPONSE" | tail -n1)
+
+          echo "Response body: $BODY"
+          echo "HTTP status: $STATUS"
+
+          if [ "$STATUS" -ge 400 ]; then
+            echo "fetch-plays route failed"
+            exit 1
+          fi
+
+      - name: Call aggregate-plays route and fail on error
         run: |
-          curl -X GET \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            "https://replay-radar.vercel.app/api/cron/aggregate-plays"
+          echo "Calling aggregate-plays..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "https://replay-radar.vercel.app/api/cron/aggregate-plays")
+
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          STATUS=$(echo "$RESPONSE" | tail -n1)
+
+          echo "Response body: $BODY"
+          echo "HTTP status: $STATUS"
+
+          if [ "$STATUS" -ge 400 ]; then
+            echo "aggregate-plays route failed"
+            exit 1
+          fi
