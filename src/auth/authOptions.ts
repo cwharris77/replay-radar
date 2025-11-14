@@ -1,6 +1,7 @@
 import { getUserCollection, SpotifyTokens } from "@/lib/models/User";
 import { NextAuthOptions } from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
+import { cookies } from "next/headers";
 
 /**
  * Get the production base URL for the static callback.
@@ -115,6 +116,12 @@ export function createAuthOptions(): NextAuthOptions {
           expiresAt,
         };
 
+        const cookieStore = await cookies();
+        const tz = cookieStore.get("user_timezone")?.value || "UTC";
+
+        // Validate TZ
+        const validTZ = /^[A-Za-z_]+\/[A-Za-z_]+$/.test(tz) ? tz : "UTC";
+
         await users.updateOne(
           { _id: user.id },
           {
@@ -123,6 +130,7 @@ export function createAuthOptions(): NextAuthOptions {
               email: user.email || undefined,
               spotify,
               updatedAt: new Date(),
+              timeZone: validTZ,
             },
             $setOnInsert: {
               createdAt: new Date(),
