@@ -15,16 +15,16 @@ const items = [
     bgColor: "#2C5530",
     textColor: "#fff",
     links: [
-      { label: "Artists", ariaLabel: "Artists Page", href: "/pages/artists" },
-      { label: "Tracks", ariaLabel: "Tracks Page", href: "/pages/tracks" },
-      { label: "Trends", ariaLabel: "Trends Page", href: "/pages/trends" },
+      { label: "Artists", ariaLabel: "Artists Page", href: "/artists" },
+      { label: "Tracks", ariaLabel: "Tracks Page", href: "/tracks" },
+      { label: "Trends", ariaLabel: "Trends Page", href: "/trends" },
     ],
   },
   {
     label: "About",
     bgColor: "#4D7EA8",
     textColor: "#fff",
-    links: [{ label: "About Us", ariaLabel: "About Us", href: "/pages/about" }],
+    links: [{ label: "About Us", ariaLabel: "About Us", href: "/about" }],
   },
 ];
 
