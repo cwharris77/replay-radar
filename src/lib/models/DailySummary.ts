@@ -12,7 +12,7 @@ export interface DailySummary {
   _id?: string;
   userId: string;
   day: string; // "2025-11-13"
-  totalMs: number; // total listening time in ms
+  minutes: number; // total listening time in ms
   trackCount: number; // number of plays
   updatedAt: Date;
 }
@@ -40,4 +40,23 @@ export async function getDailySummariesCollection(): Promise<
 
   cached = collection;
   return collection;
+}
+
+export function toUserLocalDay(date: Date, timeZone: string): string {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  // "YYYY-MM-DD"
+  return formatter.format(date);
+}
+
+export async function getDailySummary(userId: string, date: Date, tz: string) {
+  const summaries = await getDailySummariesCollection();
+  const dayKey = toUserLocalDay(date, tz);
+
+  return await summaries.findOne({ userId, day: dayKey });
 }
