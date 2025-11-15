@@ -102,8 +102,8 @@ export default function TrendLineChart({
         y: isRank
           ? {
               reverse: true,
-              min: 1,
-              max: maxRank,
+              suggestedMin: 1,
+              suggestedMax: maxRank,
               ticks: { stepSize: 1, precision: 0, callback: (v) => `#${v}` },
             }
           : {
