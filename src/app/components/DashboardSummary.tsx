@@ -5,7 +5,6 @@ interface DashboardSummaryProps {
   topArtist: Artist;
   topTracks?: Track[];
   totalMinutes: number;
-  trendData: number[];
   recentlyPlayed?: Track[];
 }
 

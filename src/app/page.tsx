@@ -1,5 +1,7 @@
 export const dynamic = "force-dynamic";
 
+import { getDailySummary } from "@/lib/models/DailySummary";
+import { getUserById } from "@/lib/models/User";
 import { getServerAuthData } from "@/lib/serverAuth";
 import { Artist } from "@/types";
 import { Suspense } from "react";
@@ -10,7 +12,7 @@ import Loading from "./components/Loading";
 import { createDefaultArtist } from "./utils/defaults";
 
 export default async function Home() {
-  const { isAuthenticated, topArtists, topTracks, recentlyPlayed } =
+  const { isAuthenticated, topArtists, topTracks, recentlyPlayed, session } =
     await getServerAuthData();
 
   if (!isAuthenticated) {
@@ -26,22 +28,13 @@ export default async function Home() {
 
   const topArtist: Artist = topArtists[0] || createDefaultArtist();
 
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
+  const user = await getUserById(session?.user.id);
 
-  const totalMinutes =
-    recentlyPlayed.length > 0
-      ? Math.round(
-          recentlyPlayed
-            .filter(
-              (track) =>
-                track.played_at && new Date(track.played_at) >= startOfToday
-            )
-            .reduce((acc, track) => acc + (track.duration_ms || 0), 0) / 60000
-        )
-      : 0;
-
-  const trendData = [5, 10, 8, 15, 12, 20, 18, 25, 22];
+  const dailySummary = await getDailySummary(
+    user?._id || "",
+    new Date(),
+    user?.timeZone || "UTC"
+  );
 
   return (
     <div className='flex flex-col justify-center items-center gap-4 min-h-screen p-4 bg-black text-white'>
@@ -52,8 +45,7 @@ export default async function Home() {
       <DashboardSummary
         topArtist={topArtist}
         topTracks={topTracks}
-        totalMinutes={totalMinutes}
-        trendData={trendData}
+        totalMinutes={dailySummary?.minutes ? dailySummary.minutes : 0}
         recentlyPlayed={recentlyPlayed}
       />
     </div>

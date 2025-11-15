@@ -22,3 +22,11 @@ export async function getUserCollection(): Promise<Collection<User>> {
   const db = client.db(process.env.MONGO_DB_NAME || "replay-radar-dev");
   return db.collection<User>("users");
 }
+
+export async function getUserById(userId?: string): Promise<User | null> {
+  if (!userId) return null;
+
+  const users = await getUserCollection();
+
+  return await users.findOne({ _id: userId });
+}
