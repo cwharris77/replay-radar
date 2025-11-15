@@ -1,5 +1,7 @@
 name: Playwright Tests
 on:
+  push:
+    branches: [main, master]
   pull_request:
     branches: [main, master]
   merge_group:
@@ -12,16 +14,22 @@ jobs:
       src_or_tests: ${{ steps.filter.outputs.src_or_tests }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for accurate diff
 
       - name: Check for file changes
         id: filter
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # For PRs, check changed files
-            files=$(git diff --name-only origin/${{ github.base_ref }}...${{ github.sha }})
+            # For PRs, fetch base branch and compare
+            git fetch origin ${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
+            files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          elif [ "${{ github.event_name }}" = "merge_group" ]; then
+            # For merge queue, compare with base
+            files=$(git diff --name-only ${{ github.event.merge_group.base_sha }}...HEAD)
           else
-            # For pushes, check last commit
-            files=$(git diff --name-only HEAD^ HEAD)
+            # For pushes, check files changed in the push
+            files=$(git diff --name-only ${{ github.event.before }}..${{ github.sha }})
           fi
 
           echo "Changed files:"
