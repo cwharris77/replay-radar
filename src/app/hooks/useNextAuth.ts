@@ -6,10 +6,6 @@ import { useSession } from "next-auth/react";
 import { useCallback, useState } from "react";
 import { isArtist, isTrack } from "../utils/defaults";
 
-interface SpotifyData {
-  items: Artist[] | Track[];
-}
-
 export function useNextAuth() {
   const { data: session, status } = useSession();
   const [topArtists, setTopArtists] = useState<Artist[]>([]);
@@ -26,24 +22,24 @@ export function useNextAuth() {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(
+        const data = await fetch(
           `/api/spotify/top-data?type=${type}&time_range=${timeRangeValue}`,
           {
             credentials: "include",
           }
         );
 
-        if (!response.ok) {
+        if (data.type === "error") {
           throw new Error("Failed to fetch data");
         }
 
-        const data: SpotifyData = await response.json();
+        const res = await data.json();
 
         if (type === "artists") {
-          const artists = data.items.filter(isArtist);
+          const artists = res.items.filter(isArtist);
           setTopArtists(artists);
         } else {
-          const tracks = data.items.filter(isTrack);
+          const tracks = res.items.filter(isTrack);
           setTopTracks(tracks);
         }
       } catch (err) {
