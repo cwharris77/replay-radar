@@ -22,24 +22,24 @@ export function useNextAuth() {
         setLoading(true);
         setError(null);
 
-        const data = await fetch(
+        const response = await fetch(
           `/api/spotify/top-data?type=${type}&time_range=${timeRangeValue}`,
           {
             credentials: "include",
           }
         );
 
-        if (data.type === "error") {
-          throw new Error("Failed to fetch data");
+        const json = await response.json();
+
+        if (!response.ok || "error" in json) {
+          throw new Error(json.error ?? "Failed to fetch data");
         }
 
-        const res = await data.json();
-
         if (type === "artists") {
-          const artists = res.items.filter(isArtist);
+          const artists = json.filter(isArtist);
           setTopArtists(artists);
         } else {
-          const tracks = res.items.filter(isTrack);
+          const tracks = json.filter(isTrack);
           setTopTracks(tracks);
         }
       } catch (err) {

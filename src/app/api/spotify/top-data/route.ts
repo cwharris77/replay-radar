@@ -3,10 +3,12 @@ import { requireSession } from "@/lib/auth";
 import { SpotifyCache } from "@/lib/models/SpotifyCache";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
 import { fetchSpotifyData } from "@/lib/spotify/spotify";
-import { SpotifyDataType, TimeRange } from "@/types";
+import { SpotifyApiResponse, SpotifyDataType, TimeRange } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest
+): Promise<NextResponse<SpotifyApiResponse>> {
   try {
     const session = await requireSession();
 
@@ -30,7 +32,7 @@ export async function GET(req: NextRequest) {
     // Check cache first
     const cachedData = await SpotifyCache.getCache(userId, type, timeRange);
     if (cachedData) {
-      return NextResponse.json({ items: cachedData.data });
+      return NextResponse.json(cachedData.data, { status: 200 });
     }
 
     let accessToken = session.user.accessToken;

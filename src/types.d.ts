@@ -72,3 +72,11 @@ export interface SpotifyRefreshErrorResponse {
 export type SpotifyRefreshResponse =
   | SpotifyRefreshSuccessResponse
   | SpotifyRefreshErrorResponse;
+
+export type SpotifySuccessResponse = Track[] | Artist[];
+
+export interface SpotifyErrorResponse {
+  error: string;
+}
+
+export type SpotifyApiResponse = SpotifySuccessResponse | SpotifyErrorResponse;
