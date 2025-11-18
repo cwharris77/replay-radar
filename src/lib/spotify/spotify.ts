@@ -1,5 +1,5 @@
 import { TimeRange, timeRange, TopDataType } from "@/app/constants";
-import { Artist, Track } from "@/types";
+import { Artist, SpotifyResponse, Track } from "@/types";
 import { Session } from "next-auth";
 import { refreshAccessToken } from "./refreshAccessToken";
 
@@ -23,10 +23,12 @@ export async function fetchSpotifyData({
   type,
   session,
   timeRangeValue = timeRange.short,
+  limit = 20,
 }: {
   type: TopDataType;
   session: Session;
   timeRangeValue?: TimeRange;
+  limit?: number;
 }): Promise<Artist[] | Track[]> {
   let accessToken = session?.user?.accessToken;
   if (!accessToken) return [];
@@ -42,11 +44,8 @@ export async function fetchSpotifyData({
     accessToken = refreshedAccessToken;
   }
 
-  const endpoint = `https://api.spotify.com/v1/me/top/${type}?limit=10&time_range=${timeRangeValue}`;
-  const data = await spotifyFetch<{ items: Artist[] | Track[] }>(
-    endpoint,
-    accessToken
-  );
+  const endpoint = `https://api.spotify.com/v1/me/top/${type}?limit=${limit}&time_range=${timeRangeValue}`;
+  const data = await spotifyFetch<SpotifyResponse>(endpoint, accessToken);
   return data.items;
 }
 

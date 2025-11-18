@@ -1,6 +1,7 @@
 import { timeRange } from "@/app/constants";
-import getSpotifyData from "@/lib/spotify/getSpotifyData";
 import { TimeRange } from "@/types";
+import { Session } from "next-auth";
+import { fetchSpotifyData } from "../spotify/spotify";
 
 export type TimeKey = Extract<TimeRange, "long_term" | "medium_term">;
 
@@ -30,20 +31,32 @@ export async function buildRankAnchors(
     { key: timeRange.medium, label: "Medium term" },
   ];
 
+  // Construct fake session for Spotify fetch
+  const session: Session = {
+    user: {
+      id: "",
+      accessToken: accessToken,
+      refreshToken: "",
+    },
+    expires: new Date(Date.now()).toISOString(),
+  };
+
   const responses = await Promise.all(
-    ranges.map((r) => getSpotifyData({ type, timeRange: r.key, accessToken }))
+    ranges.map((r) =>
+      fetchSpotifyData({ type, timeRangeValue: r.key, session })
+    )
   );
 
   const rankMaps = responses.map((resp) => {
     const map = new Map<string, number>();
-    resp.items.forEach((item, idx) => map.set(item.id, idx + 1));
+    resp.forEach((item, idx) => map.set(item.id, idx + 1));
     return map;
   });
 
   const mediumIndex = ranges.findIndex((r) => r.key === timeRange.medium);
-  const mediumItems = (responses[mediumIndex] || { items: [] })
-    .items as AnchorRankItem[];
-
+  const mediumItems = (responses[mediumIndex] || {
+    items: [],
+  }) as AnchorRankItem[];
   return { labels: ranges.map((r) => r.label), rankMaps, mediumItems };
 }
 
@@ -64,12 +77,22 @@ export async function buildGenreAnchors(
     { key: timeRange.medium, label: "Medium term" },
   ];
 
+  // Construct fake session for Spotify fetch
+  const session: Session = {
+    user: {
+      id: "",
+      accessToken: accessToken,
+      refreshToken: "",
+    },
+    expires: new Date(Date.now()).toISOString(),
+  };
+
   const responses = await Promise.all(
     ranges.map((r) =>
-      getSpotifyData({
+      fetchSpotifyData({
         type: "artists",
-        timeRange: r.key,
-        accessToken,
+        timeRangeValue: r.key,
+        session,
         limit: 50,
       })
     )
@@ -77,7 +100,7 @@ export async function buildGenreAnchors(
 
   const countsList = responses.map((resp) => {
     const counts = new Map<string, number>();
-    resp.items.forEach((artist: { genres?: string[] }) => {
+    resp.forEach((artist: { genres?: string[] }) => {
       (artist.genres || []).forEach((g: string) => {
         counts.set(g, (counts.get(g) || 0) + 1);
       });

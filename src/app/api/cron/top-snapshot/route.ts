@@ -5,9 +5,10 @@ import {
   getTracksSnapshotCollection,
 } from "@/lib/models/TopSnapshot";
 import { getUserCollection } from "@/lib/models/User";
-import getSpotifyData from "@/lib/spotify/getSpotifyData";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
+import { fetchSpotifyData } from "@/lib/spotify/spotify";
 import { Artist, TimeRange } from "@/types";
+import { Session } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -50,11 +51,22 @@ export async function GET(req: NextRequest) {
         );
       }
 
+      // Construct fake session for Spotify fetch
+      const session: Session = {
+        user: {
+          id: user._id,
+          accessToken: user.spotify.accessToken,
+          refreshToken: user.spotify.refreshToken,
+          expiresAt: user.spotify.expiresAt,
+        },
+        expires: new Date(user.spotify.expiresAt).toISOString(),
+      };
+
       for (const range of Object.values(timeRange) as TimeRange[]) {
         // Fetch artists and tracks separately for this timeRange
         const [artistsData, tracksData] = await Promise.all([
-          getSpotifyData({ type: "artists", timeRange: range, accessToken }),
-          getSpotifyData({ type: "tracks", timeRange: range, accessToken }),
+          fetchSpotifyData({ type: "artists", timeRangeValue: range, session }),
+          fetchSpotifyData({ type: "tracks", timeRangeValue: range, session }),
         ]);
 
         // Store the current timestamp when cron runs (8am UTC = ~midnight local)
@@ -63,20 +75,20 @@ export async function GET(req: NextRequest) {
         await artistsSnapshotCollection.insertOne({
           userId: user._id?.toString() || "",
           timeRange: range,
-          items: artistsData.items,
+          items: artistsData,
           takenAt,
         });
 
         await tracksSnapshotCollection.insertOne({
           userId: user._id?.toString() || "",
           timeRange: range,
-          items: tracksData.items,
+          items: tracksData,
           takenAt,
         });
 
         // Compute genre counts from artists
         // Type assertion safe here since type: "artists" guarantees Artist[]
-        const artists = artistsData.items as Artist[];
+        const artists = artistsData as Artist[];
         const genreCounts = new Map<string, number>();
         for (const artist of artists) {
           const genres = artist.genres || [];

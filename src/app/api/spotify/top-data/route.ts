@@ -1,8 +1,8 @@
 import { timeRange as timeRangeConst } from "@/app/constants";
 import { requireSession } from "@/lib/auth";
 import { SpotifyCache } from "@/lib/models/SpotifyCache";
-import fetchFromSpotify from "@/lib/spotify/getSpotifyData";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
+import { fetchSpotifyData } from "@/lib/spotify/spotify";
 import { SpotifyDataType, TimeRange } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -52,12 +52,14 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const data = await fetchFromSpotify({ type, timeRange, accessToken });
+    const data = await fetchSpotifyData({
+      type,
+      session,
+      timeRangeValue: timeRange,
+    }); // Cache the new data
+    await SpotifyCache.setCache(userId, type, data, timeRange);
 
-    // Cache the new data
-    await SpotifyCache.setCache(userId, type, data.items, timeRange);
-
-    return NextResponse.json(data);
+    return NextResponse.json(data, { status: 200 });
   } catch (err) {
     console.error("Unexpected error:", err);
     return NextResponse.json(
