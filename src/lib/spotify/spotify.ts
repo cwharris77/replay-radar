@@ -46,6 +46,7 @@ export async function fetchSpotifyData({
 
   const endpoint = `https://api.spotify.com/v1/me/top/${type}?limit=${limit}&time_range=${timeRangeValue}`;
   const data = await spotifyFetch<SpotifyResponse>(endpoint, accessToken);
+
   return data.items;
 }
 
