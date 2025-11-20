@@ -88,7 +88,6 @@ export async function GET(req: NextRequest) {
       {
         $inc: { minutes },
         $set: { updatedAt: new Date() },
-        $setOnInsert: { minutes: 0 },
       },
       { upsert: true }
     );
