@@ -40,14 +40,14 @@ export async function GET(req: NextRequest) {
       const play: Play = {
         userId,
         trackId: track.id,
-        playedAt: new Date(track.played_at!),
+        playedAt: track.played_at!,
         durationMs: track.duration_ms,
         processed: false,
       };
 
       // Dedupe on user + playedAt
       await playsCollection.updateOne(
-        { userId, playedAt: play.playedAt },
+        { userId, trackId: track.id, playedAt: track.played_at! },
         { $setOnInsert: play },
         { upsert: true }
       );

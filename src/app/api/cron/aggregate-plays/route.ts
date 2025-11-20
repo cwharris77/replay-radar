@@ -35,11 +35,19 @@ export async function GET(req: NextRequest) {
     const userId = play.userId;
     const userTz = tzMap.get(userId) ?? "UTC";
 
-    const local = new Date(
-      play.playedAt.toLocaleString("en-US", { timeZone: userTz })
-    );
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: userTz,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
 
-    const dayKey = local.toISOString().slice(0, 10); // YYYY-MM-DD
+    const parts = formatter.formatToParts(new Date(play.playedAt));
+    const year = parts.find((p) => p.type === "year")!.value;
+    const month = parts.find((p) => p.type === "month")!.value;
+    const dayNum = parts.find((p) => p.type === "day")!.value;
+
+    const dayKey = `${year}-${month}-${dayNum}`; // YYYY-MM-DD
     const bucketKey = `${userId}:${dayKey}`;
 
     if (!buckets.has(bucketKey)) {
@@ -48,11 +56,15 @@ export async function GET(req: NextRequest) {
     buckets.get(bucketKey)!.plays.push(play);
   }
 
+  const toMs = (p: Play) =>
+    typeof p.playedAt === "string"
+      ? Date.parse(p.playedAt)
+      : p.playedAt.getTime();
+
   /** Aggregate per bucket */
   for (const { userId, day, plays } of buckets.values()) {
     // Sort by playedAt ascending
-    plays.sort((a, b) => a.playedAt.getTime() - b.playedAt.getTime());
-
+    plays.sort((a, b) => toMs(a) - toMs(b));
     let totalMs = 0;
 
     for (let i = 0; i < plays.length; i++) {
@@ -64,7 +76,7 @@ export async function GET(req: NextRequest) {
         break;
       }
 
-      const delta = next.playedAt.getTime() - current.playedAt.getTime();
+      const delta = toMs(next) - toMs(current);
 
       totalMs += Math.min(delta, current.durationMs);
     }
@@ -73,7 +85,11 @@ export async function GET(req: NextRequest) {
 
     await dailyCollection.updateOne(
       { userId, day },
-      { $set: { minutes, updatedAt: new Date() } },
+      {
+        $inc: { minutes },
+        $set: { updatedAt: new Date() },
+        $setOnInsert: { minutes: 0 },
+      },
       { upsert: true }
     );
 
