@@ -1,5 +1,5 @@
 "use server";
-import CardNav from "@/components/CardNav";
+import { CardNav } from "@/components";
 import { getServerAuthData } from "@/lib/serverAuth";
 import logo from "public/replay_radar_logo.svg";
 

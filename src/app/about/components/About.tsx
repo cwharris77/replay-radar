@@ -1,6 +1,6 @@
 "use server";
+import { Loading } from "@/components";
 import { Suspense } from "react";
-import Loading from "./Loading";
 
 export default async function About() {
   return (

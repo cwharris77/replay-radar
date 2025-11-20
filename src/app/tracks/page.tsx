@@ -1,6 +1,6 @@
+import { LoginPrompt } from "@/components";
 import { getServerAuthData } from "@/lib/serverAuth";
-import LoginPrompt from "../../components/LoginPrompt";
-import TopTracks from "../../components/TopTracks";
+import TopTracks from "./components/TopTracks";
 
 export default async function TopTracksPage() {
   const { isAuthenticated } = await getServerAuthData();

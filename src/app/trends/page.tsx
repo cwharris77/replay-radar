@@ -1,13 +1,10 @@
 "use client";
-
-import ErrorCard from "@/app/components/ErrorCard";
-import Loading from "@/app/components/Loading";
-import LoginPrompt from "@/app/components/LoginPrompt";
-import TrendLineChart from "@/app/components/TrendLineChart";
 import { timeRange as timeRanges } from "@/app/constants";
-import { useNextAuth } from "@/app/hooks/useNextAuth";
+import { ErrorCard, Loading, LoginPrompt } from "@/components";
+import { useNextAuth } from "@/hooks/useNextAuth";
 import { TimeRange } from "@/types";
 import { useEffect, useMemo, useState } from "react";
+import TrendLineChart from "./components/TrendLineChart";
 
 type TabType = "artists" | "tracks" | "genres";
 

@@ -1,0 +1,3 @@
+echo "Running pre-commit checks..."
+npm run type-check || exit 1
+echo "✓ All checks passed!"
