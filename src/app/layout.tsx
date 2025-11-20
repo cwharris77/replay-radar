@@ -1,6 +1,6 @@
+import { TopNav } from "@/components";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import TopNav from "./components/TopNav";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang='en'>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        suppressHydrationWarning={true} // extensions modify the body tag after server renders but before hydration
+        // suppressHydrationWarning={true} // extensions modify the body tag after server renders but before hydration
       >
         <Providers>
           <TopNav />

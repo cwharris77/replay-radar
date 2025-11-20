@@ -13,7 +13,8 @@
     "test:unit": "playwright test --project=unit",
     "test:integration": "playwright test --project=integration",
     "test:e2e": "playwright test --project=e2e",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "prepare": "husky"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

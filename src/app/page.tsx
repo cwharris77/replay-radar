@@ -1,15 +1,13 @@
 export const dynamic = "force-dynamic";
 
+import { DashboardSummary, ErrorDisplay, Loading } from "@/components";
 import { getDailySummary } from "@/lib/models/DailySummary";
 import { getUserById } from "@/lib/models/User";
 import { getServerAuthData } from "@/lib/serverAuth";
 import { Artist } from "@/types";
+import { createDefaultArtist } from "@/utils/defaults";
 import { Suspense } from "react";
-import About from "./components/About";
-import DashboardSummary from "./components/DashboardSummary";
-import ErrorDisplay from "./components/ErrorDisplay";
-import Loading from "./components/Loading";
-import { createDefaultArtist } from "./utils/defaults";
+import About from "./about/components/About";
 
 export default async function Home() {
   const { isAuthenticated, topArtists, topTracks, recentlyPlayed, session } =

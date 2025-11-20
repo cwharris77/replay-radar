@@ -1,42 +1,49 @@
 "use client";
 
 import { TimeRange, timeRange, topDataTypes } from "@/app/constants";
-import TiltedCard from "@/components/TiltedCard";
-import { Track } from "@/types";
+import {
+  ErrorCard,
+  Loading,
+  TiltedCard,
+  TimeRangeSelector,
+} from "@/components";
+import { useNextAuth } from "@/hooks/useNextAuth";
+import { Artist } from "@/types";
 import { useEffect, useState } from "react";
-import { useNextAuth } from "../hooks/useNextAuth";
-import ErrorCard from "./ErrorCard";
-import Loading from "./Loading";
-import TimeRangeSelector from "./TimeRangeSelector";
 
-export default function TopTracks() {
-  const { topTracks, isLoading, authError, fetchSpotifyData, isAuthenticated } =
-    useNextAuth();
+export default function TopArtists() {
+  const {
+    topArtists,
+    isLoading,
+    authError,
+    fetchSpotifyData,
+    isAuthenticated,
+  } = useNextAuth();
   const [selectedRange, setSelectedRange] = useState<TimeRange>(
     timeRange.short
   );
 
-  // Fetch tracks data once on page load when authenticated
+  // Fetch artist data once on page load when authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      fetchSpotifyData(topDataTypes.tracks, selectedRange);
+      fetchSpotifyData(topDataTypes.artists, selectedRange);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, selectedRange, fetchSpotifyData]);
 
   const handleRangeChange = (range: TimeRange) => {
     setSelectedRange(range);
-    fetchSpotifyData(topDataTypes.tracks, range);
+    fetchSpotifyData(topDataTypes.artists, range);
   };
 
   if (isLoading) {
-    return <Loading size='md' text='Loading your top tracks...' />;
+    return <Loading size='md' text='Loading your top artists...' />;
   }
 
   if (authError) {
     return <ErrorCard message={authError} />;
   }
 
-  const tracks: Track[] = topTracks || [];
+  const artists: Artist[] = topArtists || [];
 
   return (
     <div className='max-w-full mx-auto'>
@@ -44,22 +51,22 @@ export default function TopTracks() {
         selectedRange={selectedRange}
         onRangeChange={handleRangeChange}
       />
-      <div className='default-card-grid' data-testid='top-tracks'>
-        {tracks.map((track) => (
+      <div className='default-card-grid' data-testid='top-artists'>
+        {artists.map((artist) => (
           <TiltedCard
-            altText={track.name}
+            altText={artist.name}
             displayOverlayContent={true}
-            imageSrc={track.album.images[0].url}
-            key={track.id}
+            imageSrc={artist.images[0].url}
+            key={artist.id}
             overlayContent={
               <a
                 className='tilted-card-overlay'
-                key={track.id}
-                href={track.external_urls.spotify}
+                key={artist.id}
+                href={artist.external_urls.spotify}
                 target='_blank'
                 rel='noopener noreferrer'
               >
-                {track.name}
+                {artist.name}
               </a>
             }
             rotateAmplitude={12}
