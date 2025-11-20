@@ -149,23 +149,6 @@ For production, we recommend using [MongoDB Atlas](https://www.mongodb.com/cloud
 4. Whitelist Vercel IP addresses or use `0.0.0.0/0` (for all IPs) during setup
 5. Get your connection string and add it as `MONGODB_URI`
 
-## Project Structure
-
-```
-src/
-├── app/              # Next.js app router pages and API routes
-│   ├── api/         # API endpoints
-│   ├── components/  # React components
-│   ├── pages/       # Page components
-│   └── hooks/       # Custom React hooks
-├── auth/            # NextAuth configuration
-├── lib/             # Utility libraries and data models
-│   ├── models/      # MongoDB data models
-│   ├── spotify/     # Spotify API integration
-│   └── trends/      # Trend analysis utilities
-└── types/           # TypeScript type definitions
-```
-
 ## Learn More
 
 - [Next.js Documentation](https://nextjs.org/docs)
