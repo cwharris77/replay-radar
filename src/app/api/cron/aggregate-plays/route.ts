@@ -50,6 +50,15 @@ export async function GET(req: NextRequest) {
     const dayKey = `${year}-${month}-${dayNum}`; // YYYY-MM-DD
     const bucketKey = `${userId}:${dayKey}`;
 
+    console.log(
+      "Day key",
+      dayKey,
+      "for play at",
+      play.playedAt,
+      "in tz",
+      userTz
+    );
+
     if (!buckets.has(bucketKey)) {
       buckets.set(bucketKey, { userId, day: dayKey, plays: [] });
     }
@@ -88,7 +97,6 @@ export async function GET(req: NextRequest) {
       {
         $inc: { minutes },
         $set: { updatedAt: new Date() },
-        $setOnInsert: { minutes: 0 },
       },
       { upsert: true }
     );
