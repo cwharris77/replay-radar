@@ -5,7 +5,7 @@ export interface Play {
   _id?: string;
   userId: string;
   trackId: string;
-  playedAt: Date; // Timestamp of when the track started (UTC)
+  playedAt: string | Date; // Timestamp of when the track started (UTC)
   durationMs: number;
   processed?: boolean; // mark this play as processed for aggregation to avoid recalculating metrics
 }
