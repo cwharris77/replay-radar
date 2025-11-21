@@ -1,4 +1,5 @@
 import { TopNav } from "@/components";
+import MobileNav from "@/components/MobileNav";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -31,7 +32,15 @@ export default function RootLayout({
         // suppressHydrationWarning={true} // extensions modify the body tag after server renders but before hydration
       >
         <Providers>
-          <TopNav />
+          <>
+            {/* Desktop nav */}
+            <div className="hidden md:block">
+              <TopNav />
+            </div>
+
+            {/* Mobile nav */}
+            <MobileNav />
+          </>
           {children}
         </Providers>
       </body>
