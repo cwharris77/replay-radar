@@ -40,6 +40,9 @@ export function createAuthOptions(): NextAuthOptions {
         },
       }),
     ],
+    pages: {
+      signIn: "/login",
+    },
     callbacks: {
       async jwt({ token, account }) {
         // Initial sign-in

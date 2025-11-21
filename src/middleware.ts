@@ -12,6 +12,11 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
 
+    // Redirect authenticated users away from login page
+    if (pathname === "/login" && token) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+
     if (isAdminRoute(pathname) && token?.role !== "admin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -28,5 +33,14 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/api/((?!auth).*)", "/admin/:path*"],
+  matcher: [
+    "/api/((?!auth).*)",
+    "/admin/:path*",
+    "/trends/:path*",
+    "/dashboard/:path*",
+    "/artists/:path*",
+    "/tracks/:path*",
+    "/genres/:path*",
+    "/login", // Add login to check for authenticated users
+  ],
 };
