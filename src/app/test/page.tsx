@@ -1,5 +1,5 @@
-import Test from "../components/Test";
+import TopItemsTrends from "@/components/Test";
 
 export default async function Name() {
-  return <Test />;
+  return <TopItemsTrends />;
 }
