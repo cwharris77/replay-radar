@@ -9,7 +9,6 @@ const sidebarLinks = [
   { href: "/trends/artists", label: "Artists" },
   { href: "/trends/tracks", label: "Tracks" },
   { href: "/trends/genres", label: "Genres" },
-  { href: "/trends/advanced", label: "Advanced" },
 ];
 
 export default function TrendsLayout({ children }: { children: React.ReactNode }) {

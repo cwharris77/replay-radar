@@ -34,9 +34,7 @@ export default async function ArtistsPage() {
       <h1 className='text-2xl md:text-3xl font-bold text-white mb-4'>
         Artist Trends
       </h1>
-      <p className='text-gray-300 mb-6'>
-        Daily snapshots of your top artists. Lower rank number is better.
-      </p>
+      
 
       {series.length > 0 ? (
         <div className='bg-gray-900 border border-gray-800 rounded-xl p-4'>

@@ -34,9 +34,6 @@ export default async function GenresPage() {
       <h1 className='text-2xl md:text-3xl font-bold text-white mb-4'>
         Genre Trends
       </h1>
-      <p className='text-gray-300 mb-6'>
-        Daily snapshots of your top genres. Shows listen counts.
-      </p>
 
       {series.length > 0 ? (
         <div className='bg-gray-900 border border-gray-800 rounded-xl p-4'>
@@ -44,7 +41,7 @@ export default async function GenresPage() {
             labels={labels}
             series={series}
             maxRank={limit}
-            mode='count'
+            mode='rank'
           />
         </div>
       ) : (
