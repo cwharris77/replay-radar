@@ -57,7 +57,7 @@ export default function TrendLineChart({
           data: s.data,
           borderColor: color,
           backgroundColor: color,
-          spanGaps: true,
+          spanGaps: false,
           pointRadius: 3,
           pointHoverRadius: 5,
           tension: 0.2,
