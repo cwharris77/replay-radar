@@ -38,17 +38,7 @@ export interface TrendLineChartProps {
   mode?: "rank" | "count";
 }
 
-const COLORS = [
-  "#22c55e",
-  "#60a5fa",
-  "#f59e0b",
-  "#ef4444",
-  "#a78bfa",
-  "#14b8a6",
-  "#f472b6",
-];
-
-const COLOR_NAMES = ["Green", "Blue", "Amber", "Red", "Violet", "Teal", "Pink"];
+import { generateDistinctColors } from "@/utils/colors";
 
 export default function TrendLineChart({
   labels,
@@ -57,13 +47,13 @@ export default function TrendLineChart({
   mode = "rank",
 }: TrendLineChartProps) {
   const data = useMemo<ChartData<"line">>(() => {
+    const colors = generateDistinctColors(series.length);
     return {
       labels,
       datasets: series.map((s, idx) => {
-        const color = COLORS[idx % COLORS.length];
-        const colorName = COLOR_NAMES[idx % COLOR_NAMES.length];
+        const color = colors[idx];
         return {
-          label: `${s.name} (${colorName})`,
+          label: s.name,
           data: s.data,
           borderColor: color,
           backgroundColor: color,
