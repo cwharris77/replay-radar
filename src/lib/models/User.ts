@@ -15,6 +15,7 @@ export interface User {
   createdAt?: Date;
   updatedAt?: Date;
   timeZone?: string;
+  role?: "user" | "admin";
 }
 
 export async function getUserCollection(): Promise<Collection<User>> {
