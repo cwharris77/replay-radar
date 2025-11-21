@@ -1,4 +1,5 @@
 import { getUserCollection, SpotifyTokens } from "@/lib/models/User";
+import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
 import { NextAuthOptions } from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 import { cookies } from "next/headers";
@@ -41,11 +42,43 @@ export function createAuthOptions(): NextAuthOptions {
     ],
     callbacks: {
       async jwt({ token, account }) {
+        // Initial sign-in
         if (account) {
           token.accessToken = account.access_token;
           token.refreshToken = account.refresh_token;
-          token.expiresAt = account.expires_at! * 1000;
+          token.expiresAt = account.expires_at! * 1000; // convert sec → ms
+          return token;
         }
+
+        // If we don't have expiration info, fail fast
+        if (!token.expiresAt) return token;
+
+        // If token is still valid, return it
+        const now = Date.now();
+        // Ensure expiresAt is a number
+        const expiresAt = Number(token.expiresAt);
+        if (Number.isFinite(expiresAt) && now < expiresAt - 60_000) {
+          // 60s buffer
+          return token;
+        }
+
+        // Token is expired → refresh
+        console.log("[AUTH] Access token expired, refreshing…");
+
+        const refreshed = await refreshAccessToken(
+          token.refreshToken as string
+        );
+
+        if (!refreshed || !refreshed.accessToken) {
+          console.error("[AUTH] Failed to refresh access token");
+          return token; // fallback (forces re-login soon)
+        }
+
+        // Update the token
+        token.accessToken = refreshed.accessToken;
+        token.expiresAt = refreshed.expiresAt;
+        token.refreshToken = refreshed.refreshToken ?? token.refreshToken;
+
         return token;
       },
       async session({ session, token }) {
