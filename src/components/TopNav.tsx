@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import logo from "public/replay_radar_logo.svg";
 import { useState } from "react";
-import { ProfileButton } from "./ProfileButton";
+import ProfileButton from "./ProfileButton";
 
 const navLinks = [
   { label: "Dashboard", href: "/" },

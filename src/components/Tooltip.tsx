@@ -12,16 +12,15 @@ interface TooltipProps {
   arrowOffset?: number;
 }
 
-export const Tooltip = ({
+export default function Tooltip({
   isOpen,
   onClose,
   children,
   triggerRef,
   position = "bottom",
   align = "end",
-
   arrowOffset = 32,
-}: TooltipProps) => {
+}: TooltipProps): React.JSX.Element | null {
   const tooltipRef = useRef<HTMLDivElement>(null);
 
   // Close tooltip when clicking outside
@@ -110,4 +109,4 @@ export const Tooltip = ({
       </div>
     </div>
   );
-};
+}

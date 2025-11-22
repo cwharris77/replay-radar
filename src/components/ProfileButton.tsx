@@ -1,20 +1,28 @@
 "use client";
 
 import { useNextAuth } from "@/hooks/useNextAuth";
-import { logout } from "@/lib/actions/auth";
+import { login, logout } from "@/lib/actions/auth";
 import Image from "next/image";
-import { useRef, useState } from "react";
-import { Tooltip } from "./Tooltip";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useRef, useState } from "react";
 import { LoginIcon, LogoutIcon, UserIcon } from "./icons/AuthIcons";
+import Loading from "./Loading";
+import Tooltip from "./Tooltip";
 
-export const ProfileButton = () => {
+const ProfileButtonContent = () => {
   const { session, isAuthenticated } = useNextAuth();
   const [showTooltip, setShowTooltip] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const searchParams = useSearchParams();
 
   const handleSignOut = () => {
     setShowTooltip(false);
     logout("/");
+  };
+
+  const handleSignIn = () => {
+    setShowTooltip(false);
+    login(searchParams.get("callbackUrl") || "/");
   };
 
   return (
@@ -85,7 +93,7 @@ export const ProfileButton = () => {
                 <p className='font-semibold text-foreground truncate'>Login</p>
               </div>
               <button
-                onClick={handleSignOut}
+                onClick={handleSignIn}
                 className='p-2 hover:bg-secondary rounded-lg transition-colors flex-shrink-0'
                 aria-label='Sign out'
                 title='Sign out'
@@ -99,3 +107,11 @@ export const ProfileButton = () => {
     </div>
   );
 };
+
+export default function ProfileButton() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ProfileButtonContent />
+    </Suspense>
+  );
+}
