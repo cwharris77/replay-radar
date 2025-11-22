@@ -1,5 +1,4 @@
 import { TopNav } from "@/components";
-import MobileNav from "@/components/MobileNav";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -29,19 +28,12 @@ export default function RootLayout({
     <html lang='en'>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        // suppressHydrationWarning={true} // extensions modify the body tag after server renders but before hydration
       >
         <Providers>
-          <>
-            {/* Desktop nav */}
-            <div className="hidden md:block">
-              <TopNav />
-            </div>
-
-            {/* Mobile nav */}
-            <MobileNav />
-          </>
-          {children}
+          <TopNav />
+          <main className='pt-navbar-sm md:pt-navbar-md lg:pt-navbar-lg'>
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

@@ -15,7 +15,7 @@ export default async function Home() {
 
   if (!isAuthenticated) {
     return (
-      <div className='flex flex-col justify-center items-center gap-4 min-h-screen p-4 bg-black text-white'>
+      <div className='flex flex-col justify-center items-center gap-4 min-h-screen p-4 bg-background text-foreground'>
         <Suspense fallback={<Loading size='2xl' />}>
           <ErrorDisplay />
         </Suspense>
@@ -35,7 +35,7 @@ export default async function Home() {
   );
 
   return (
-    <div className='flex flex-col justify-center items-center gap-4 min-h-screen p-4 bg-black text-white'>
+    <div className='flex flex-col justify-center items-center gap-4 min-h-screen p-4 bg-background text-foreground'>
       <Suspense fallback={<Loading size='2xl' />}>
         <ErrorDisplay />
       </Suspense>

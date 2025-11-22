@@ -21,7 +21,7 @@ export default async function ArtistsPage() {
       </div>
     );
   }
-  const limit = 5
+  const limit = 5;
   const { labels, series } = await getTopItemTrendData({
     userId: session.user.id,
     timeRange: timeRanges.short,
@@ -31,13 +31,12 @@ export default async function ArtistsPage() {
 
   return (
     <div className='max-w-6xl mx-auto px-4 py-6 md:py-8'>
-      <h1 className='text-2xl md:text-3xl font-bold text-white mb-4'>
+      <h1 className='text-2xl md:text-3xl font-bold text-foreground mb-4'>
         Artist Trends
       </h1>
-      
 
       {series.length > 0 ? (
-        <div className='bg-gray-900 border border-gray-800 rounded-xl p-4'>
+        <div className='bg-card border border-border rounded-xl p-4'>
           <TrendLineChart
             labels={labels}
             series={series}
@@ -46,7 +45,7 @@ export default async function ArtistsPage() {
           />
         </div>
       ) : (
-        <div className='bg-gray-900 border border-gray-800 rounded-xl p-4 text-gray-400'>
+        <div className='bg-card border border-border rounded-xl p-4 text-muted-foreground'>
           No trend data yet. Check back after the daily snapshot runs.
         </div>
       )}

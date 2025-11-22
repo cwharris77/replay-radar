@@ -13,7 +13,7 @@ export default function LoginPrompt({
 }: LoginPromptProps) {
   return (
     <div className='flex flex-col items-center justify-center min-h-[60vh] p-6 text-center'>
-      <div className='bg-gray-900 border border-gray-800 rounded-xl p-8 max-w-md w-full'>
+      <div className='bg-card border border-border rounded-xl p-8 max-w-md w-full'>
         <h2 className='text-2xl font-bold text-white mb-3'>{title}</h2>
         <p className='text-gray-400 mb-6'>{message}</p>
         <button
