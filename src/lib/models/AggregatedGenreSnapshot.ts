@@ -1,9 +1,7 @@
 import clientPromise from "../mongodb";
 import { GenreSnapshot } from "./GenreSnapshot";
 
-export interface AggregatedGenreSnapshot extends GenreSnapshot {
-  // Inherits structure from GenreSnapshot
-}
+export type AggregatedGenreSnapshot = GenreSnapshot;
 
 /**
  * Get the monthly top genres collection.

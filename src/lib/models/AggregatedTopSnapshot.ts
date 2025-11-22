@@ -1,9 +1,7 @@
 import clientPromise from "../mongodb";
 import { TopSnapshot } from "./TopSnapshot";
 
-export interface AggregatedTopSnapshot extends TopSnapshot {
-  // Inherits structure from TopSnapshot
-}
+export type AggregatedTopSnapshot = TopSnapshot;
 
 /**
  * Get the monthly top artists collection.

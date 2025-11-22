@@ -27,7 +27,10 @@ async function aggregateItems(
   snapshots: TopSnapshot[],
   limit: number = 20
 ): Promise<TopSnapshot["items"]> {
-  const appearanceCounts = new Map<string, { count: number; item: any }>();
+  const appearanceCounts = new Map<
+    string,
+    { count: number; item: TopSnapshot["items"][number] }
+  >();
 
   snapshots.forEach((snap) => {
     snap.items.forEach((item) => {
@@ -49,8 +52,7 @@ async function aggregateItems(
 }
 
 async function aggregateGenres(
-  snapshots: GenreSnapshot[],
-  limit: number = 20
+  snapshots: GenreSnapshot[]
 ): Promise<Record<string, number>> {
   const genreCounts = new Map<string, number>();
 
