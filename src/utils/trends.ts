@@ -14,6 +14,7 @@ import {
   getYearlyTopArtistsCollection,
   getYearlyTopTracksCollection,
 } from "@/lib/models/AggregatedTopSnapshot";
+import { getGenreSnapshotCollection } from "@/lib/models/GenreSnapshot";
 import {
   getArtistsSnapshotCollection,
   getTracksSnapshotCollection,
@@ -46,6 +47,9 @@ export async function getTopItemTrendData({
         case trendPeriod.yearly:
           collection = await getYearlyTopArtistsCollection();
           break;
+        case trendPeriod.daily:
+          collection = await getArtistsSnapshotCollection();
+          break;
         default:
           collection = await getArtistsSnapshotCollection();
       }
@@ -57,6 +61,9 @@ export async function getTopItemTrendData({
           break;
         case trendPeriod.yearly:
           collection = await getYearlyTopTracksCollection();
+          break;
+        case trendPeriod.daily:
+          collection = await getTracksSnapshotCollection();
           break;
         default:
           collection = await getTracksSnapshotCollection();
@@ -73,6 +80,9 @@ export async function getTopItemTrendData({
       break;
     case trendPeriod.yearly:
       timeRangeToFetch = trendPeriod.yearly;
+      break;
+    case trendPeriod.daily:
+      timeRangeToFetch = timeRange.short;
       break;
     default:
       timeRangeToFetch = timeRange.short;
@@ -142,12 +152,18 @@ export async function getGenreTrendData({
     case trendPeriod.yearly:
       collection = await getYearlyTopGenresCollection();
       break;
+    case trendPeriod.daily:
+      collection = await getGenreSnapshotCollection();
+      break;
     default:
       throw new Error("Invalid period");
   }
 
   let timeRangeToFetch: TimeRange | TrendPeriod = timeRange.short;
   switch (period) {
+    case trendPeriod.daily:
+      timeRangeToFetch = timeRange.short;
+      break;
     case trendPeriod.monthly:
       timeRangeToFetch = trendPeriod.monthly;
       break;
