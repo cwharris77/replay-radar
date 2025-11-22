@@ -13,7 +13,7 @@ export interface DailySummary {
   userId: string;
   day: string; // "2025-11-13"
   minutes: number; // total listening time in ms
-  trackCount: number; // number of plays
+  trackCount?: number; // number of plays
   updatedAt: Date;
 }
 
@@ -59,4 +59,45 @@ export async function getDailySummary(userId: string, date: Date, tz: string) {
   const dayKey = toUserLocalDay(date, tz);
 
   return await summaries.findOne({ userId, day: dayKey });
+}
+
+export async function getUserDailySummaries(userId: string) {
+  const collection = await getDailySummariesCollection();
+
+  return await collection
+    .find({ userId })
+    .sort({ day: 1 }) // ensure chronological order
+    .toArray();
+}
+
+export function buildContinuousDailyArray(summaries: DailySummary[]) {
+  if (summaries.length === 0) return [];
+
+  const result = [];
+  const summaryMap = new Map(summaries.map((s) => [s.day, s.trackCount ?? 0]));
+
+  // Parse dates without timezone conversion
+  const parseLocalDate = (dayStr: string) => {
+    const [year, month, day] = dayStr.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  };
+
+  const start = parseLocalDate(summaries[0].day);
+  const end = parseLocalDate(summaries[summaries.length - 1].day);
+
+  const cursor = new Date(start);
+
+  while (cursor <= end) {
+    // Format the cursor date as YYYY-MM-DD in local time
+    const year = cursor.getFullYear();
+    const month = String(cursor.getMonth() + 1).padStart(2, "0");
+    const day = String(cursor.getDate()).padStart(2, "0");
+    const dayStr = `${year}-${month}-${day}`;
+
+    result.push({ day: dayStr, count: summaryMap.get(dayStr) ?? 0 });
+
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return result;
 }

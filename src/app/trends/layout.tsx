@@ -19,6 +19,7 @@ const sidebarLinks = [
   { href: "/trends/artists", label: "Artists", icon: Mic2 },
   { href: "/trends/tracks", label: "Tracks", icon: Music },
   { href: "/trends/genres", label: "Genres", icon: Disc },
+  // { href: "/trends/stats", label: "Stats", icon: BarChart },
 ];
 
 export default function TrendsLayout({

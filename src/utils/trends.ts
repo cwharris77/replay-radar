@@ -218,3 +218,49 @@ export async function getGenreTrendData({
 
   return { labels, series: Array.from(genreMap.values()) };
 }
+
+export function buildWeeklyGrid(daily: { day: string; count: number }[]) {
+  if (daily.length === 0) return [];
+
+  const grid = [];
+
+  // Find the first Sunday before the dataset begins
+  const start = new Date(daily[0].day);
+  while (start.getDay() !== 0) {
+    start.setDate(start.getDate() - 1);
+  }
+
+  // Find the last Saturday after the dataset ends
+  const end = new Date(daily[daily.length - 1].day);
+  while (end.getDay() !== 6) {
+    end.setDate(end.getDate() + 1);
+  }
+
+  // Cursor across full range
+  const cursor = start;
+  let week = [];
+
+  const dailyMap = new Map(daily.map((d) => [d.day, d.count]));
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  while (cursor <= end) {
+    const dayStr = `${cursor.getFullYear()}-${pad(cursor.getMonth() + 1)}-${pad(
+      cursor.getDate()
+    )}`;
+
+    week.push({
+      day: dayStr,
+      count: dailyMap.get(dayStr) ?? 0,
+    });
+
+    if (cursor.getDay() === 6) {
+      grid.push(week);
+      week = [];
+    }
+
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return grid;
+}

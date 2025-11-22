@@ -1,4 +1,5 @@
 export { default as CardNav } from "./CardNav";
+export { default as Carousel } from "./Carousel";
 export { default as DashboardSummary } from "./DashboardSummary";
 export { default as ErrorCard } from "./ErrorCard";
 export { default as ErrorDisplay } from "./ErrorDisplay";
@@ -7,6 +8,7 @@ export { default as Loading } from "./Loading";
 export { default as LoginPrompt } from "./LoginPrompt";
 export { default as MagicBento } from "./MagicBento";
 export { default as ProfileButton } from "./ProfileButton";
+export { default as StatsHeatmap } from "./StatsHeatmap";
 export { default as TiltedCard } from "./TiltedCard";
 export { default as TimeRangeSelector } from "./TimeRangeSelector";
 export { default as Tooltip } from "./Tooltip";
