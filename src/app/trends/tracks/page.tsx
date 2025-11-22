@@ -37,7 +37,7 @@ export default async function TracksPage() {
       </h1>
 
       {series.length > 0 ? (
-        <div className='bg-gray-900 border border-gray-800 rounded-xl p-4'>
+        <div className='bg-card border border-border rounded-xl p-4'>
           <TrendLineChart 
             labels={labels}
             series={series}
@@ -46,7 +46,7 @@ export default async function TracksPage() {
           />
         </div>
       ) : (
-        <div className='bg-gray-900 border border-gray-800 rounded-xl p-4 text-gray-400'>
+        <div className='bg-card border border-border rounded-xl p-4 text-muted-foreground'>
           No trend data yet. Check back after the daily snapshot runs.
         </div>
       )}

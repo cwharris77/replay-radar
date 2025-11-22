@@ -28,7 +28,7 @@ export default function MobileNav() {
 
       {/* Drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-gray-900 border-r border-gray-800 p-6 z-50 
+        className={`fixed top-0 left-0 h-full w-64 bg-sidebar border-r border-sidebar-border p-6 z-50 
         transform transition-transform duration-300 
         ${open ? "translate-x-0" : "-translate-x-full"}`}
       >
@@ -40,15 +40,15 @@ export default function MobileNav() {
         <h2 className="text-xl font-semibold mb-6 text-white">Menu</h2>
 
         <div className="flex flex-col gap-2">
-          <Link href="/" className="text-gray-300" onClick={() => setOpen(false)}>
+          <Link href="/" className="text-sidebar-accent-foreground" onClick={() => setOpen(false)}>
             Home
           </Link>
 
-          <Link href="/trends" className="text-gray-300" onClick={() => setOpen(false)}>
+          <Link href="/trends" className="text-sidebar-accent-foreground" onClick={() => setOpen(false)}>
             Trends
           </Link>
 
-          <Link href="/dashboard" className="text-gray-300" onClick={() => setOpen(false)}>
+          <Link href="/dashboard" className="text-sidebar-accent-foreground" onClick={() => setOpen(false)}>
             Dashboard
           </Link>
 
@@ -56,7 +56,7 @@ export default function MobileNav() {
 
           {/* Auth */}
           <button
-            className="text-gray-300 text-left"
+            className="text-sidebar-accent-foreground text-left"
             onClick={() => {
               signIn("spotify");
               setOpen(false);
@@ -66,7 +66,7 @@ export default function MobileNav() {
           </button>
 
           <button
-            className="text-gray-300 text-left"
+            className="text-sidebar-accent-foreground text-left"
             onClick={() => {
               signOut({ callbackUrl: "/" });
               setOpen(false);

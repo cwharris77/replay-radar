@@ -12,11 +12,11 @@ function LoginContent() {
   return (
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900'>
       <div className='max-w-md w-full mx-4'>
-        <div className='bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl'>
+        <div className='bg-card border border-border rounded-2xl p-8 shadow-2xl'>
           {/* Logo/Title */}
           <div className='text-center mb-8'>
-            <h1 className='text-3xl font-bold text-white mb-2'>Replay Radar</h1>
-            <p className='text-gray-400'>
+            <h1 className='text-3xl font-bold text-foreground mb-2'>Replay Radar</h1>
+            <p className='text-muted-foreground'>
               Sign in to view your Spotify insights
             </p>
           </div>
@@ -35,7 +35,7 @@ function LoginContent() {
           {/* Sign In Button */}
           <button
             onClick={() => login(callbackUrl)}
-            className='w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-3'
+            className='w-full bg-green-600 hover:bg-green-700 text-foreground font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-3'
           >
             <svg
               className='w-6 h-6'
@@ -49,7 +49,7 @@ function LoginContent() {
           </button>
 
           {/* Info Text */}
-          <p className='text-gray-500 text-xs text-center mt-6'>
+          <p className='text-muted-foreground text-xs text-center mt-6'>
             By signing in, you agree to connect your Spotify account
           </p>
         </div>
@@ -63,7 +63,7 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900'>
-          <div className='text-white'>Loading...</div>
+          <div className='text-foreground'>Loading...</div>
         </div>
       }
     >

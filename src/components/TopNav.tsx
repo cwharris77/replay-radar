@@ -1,55 +1,138 @@
-"use server";
-import { CardNav } from "@/components";
-import { getServerAuthData } from "@/lib/serverAuth";
+"use client";
+import { Menu, X } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import logo from "public/replay_radar_logo.svg";
+import { useState } from "react";
 
-const items = [
-  {
-    label: "Home",
-    bgColor: "#022703",
-    textColor: "#fff",
-    links: [{ label: "Dashboard", ariaLabel: "Your Dashboard", href: "/" }],
-  },
-  {
-    label: "Pages",
-    bgColor: "#2C5530",
-    textColor: "#fff",
-    links: [
-      { label: "Artists", ariaLabel: "Artists Page", href: "/artists" },
-      { label: "Tracks", ariaLabel: "Tracks Page", href: "/tracks" },
-      { label: "Trends", ariaLabel: "Trends Page", href: "/trends" },
-    ],
-  },
-  {
-    label: "About",
-    bgColor: "#4D7EA8",
-    textColor: "#fff",
-    links: [{ label: "About Us", ariaLabel: "About Us", href: "/about" }],
-  },
+const navLinks = [
+  { label: "Dashboard", href: "/" },
+  { label: "Artists", href: "/artists" },
+  { label: "Tracks", href: "/tracks" },
+  { label: "Trends", href: "/trends" },
+  { label: "About", href: "/about" },
 ];
 
-const TopNav = async () => {
-  const { isAuthenticated } = await getServerAuthData();
-
-  const buttonBgColor = !isAuthenticated
-    ? "var(--color-primary)"
-    : "var(--auburn)";
+const TopNav = () => {
+  const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className='flex justify-center mt-[1.2em] md:mt-[2em]'>
-      <CardNav
-        logo={logo.src}
-        logoAlt='Replay Radar Logo'
-        items={items}
-        baseColor='var(--color-secondary)'
-        menuColor='var(--color-primary)'
-        buttonBgColor={buttonBgColor}
-        buttonTextColor='#fff'
-        ease='power3.out'
-        className=''
-        isAuthenticated={isAuthenticated}
-      />
-    </div>
+    <>
+      <nav className='fixed top-0 w-full bg-background border-b border-border z-50 shadow-sm h-navbar-sm md:h-navbar-md lg:h-navbar-lg'>
+        <div className='grid grid-cols-3 items-center max-w-[1400px] mx-auto h-full'>
+          {/* Hamburger Menu - Mobile & Tablet */}
+          <div className='lg:hidden flex items-center justify-start pl-4'>
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className='p-2 hover:bg-secondary rounded-lg transition-colors'
+              aria-label='Open menu'
+            >
+              <Menu className='w-6 h-6 text-foreground' />
+            </button>
+          </div>
+
+          {/* Navigation Links - Desktop Only (lg+) */}
+          <div className='hidden lg:flex items-center gap-8 justify-start pl-6'>
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`relative py-2 text-[15px] font-medium transition-colors ${
+                  pathname === link.href
+                    ? "text-foreground font-semibold after:absolute after:bottom-[-12px] after:left-0 after:right-0 after:h-[2px] after:bg-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Logo Section - Center */}
+          <div className='flex items-center justify-center'>
+            <Link
+              href='/'
+              className='flex items-center hover:opacity-80 transition-opacity'
+            >
+              <Image
+                src={logo.src}
+                alt='Replay Radar Logo'
+                width={40}
+                height={40}
+                priority
+              />
+            </Link>
+          </div>
+
+          {/* User Actions - Right */}
+          <div className='flex items-center gap-4 justify-end pr-6'>
+            <button
+              className='p-2 hover:bg-secondary rounded-full transition-all'
+              aria-label='User profile'
+            >
+              <div className='w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground'>
+                <svg
+                  width='20'
+                  height='20'
+                  viewBox='0 0 24 24'
+                  fill='currentColor'
+                >
+                  <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z' />
+                </svg>
+              </div>
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Menu Drawer */}
+      {mobileMenuOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className='fixed inset-0 bg-black/50 z-50 lg:hidden'
+            onClick={() => setMobileMenuOpen(false)}
+          />
+
+          {/* Drawer */}
+          <div className='fixed top-0 left-0 h-full w-64 bg-background border-r border-border z-50 lg:hidden shadow-xl'>
+            <div className='flex flex-col h-full'>
+              {/* Header */}
+              <div className='flex items-center justify-between p-4 border-b border-border'>
+                <h2 className='text-lg font-semibold text-foreground'>Menu</h2>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className='p-2 hover:bg-secondary rounded-lg transition-colors'
+                  aria-label='Close menu'
+                >
+                  <X className='w-5 h-5 text-foreground' />
+                </button>
+              </div>
+
+              {/* Navigation Links */}
+              <nav className='flex flex-col p-4 gap-2'>
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                      pathname === link.href
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-secondary"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 };
 
