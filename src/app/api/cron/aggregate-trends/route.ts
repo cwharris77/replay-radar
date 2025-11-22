@@ -19,7 +19,7 @@ import {
   TopSnapshot,
 } from "@/lib/models/TopSnapshot";
 import { getUserCollection } from "@/lib/models/User";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic"; // Ensure this route is not cached
 
@@ -66,8 +66,16 @@ async function aggregateGenres(
   return Object.fromEntries(genreCounts);
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const cronToken = req.headers.get("authorization");
+    if (cronToken !== `Bearer ${process.env.CRON_SECRET}`) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const usersCollection = await getUserCollection();
     const users = await usersCollection.find({}).toArray();
 
