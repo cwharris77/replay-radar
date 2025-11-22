@@ -59,8 +59,8 @@ export default function TrendsLayout({
         <div className='p-6 pt-8 flex-1'>
           <h2
             className={cn(
-              "text-xl font-semibold text-sidebar-foreground mb-6 transition-opacity duration-300 h-7 overflow-hidden whitespace-nowrap",
-              isCollapsed ? "opacity-0 w-0" : "opacity-100"
+              "text-xl font-semibold text-sidebar-foreground mb-6 transition-all duration-300 h-7 overflow-hidden whitespace-nowrap",
+              isCollapsed ? "opacity-0 w-0" : "opacity-100 delay-100"
             )}
           >
             Trends
@@ -98,7 +98,9 @@ export default function TrendsLayout({
                   <span
                     className={cn(
                       "whitespace-nowrap transition-all duration-300 overflow-hidden",
-                      isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+                      isCollapsed
+                        ? "w-0 opacity-0"
+                        : "w-auto opacity-100 delay-100"
                     )}
                   >
                     {link.label}
