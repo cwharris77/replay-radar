@@ -1,19 +1,25 @@
 "use client";
 
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Disc,
+  LayoutDashboard,
+  Mic2,
+  Music,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const sidebarLinks = [
-  { href: "/trends", label: "Overview" },
-  { href: "/trends/artists", label: "Artists" },
-  { href: "/trends/tracks", label: "Tracks" },
-  { href: "/trends/genres", label: "Genres" },
+  { href: "/trends", label: "Overview", icon: LayoutDashboard },
+  { href: "/trends/artists", label: "Artists", icon: Mic2 },
+  { href: "/trends/tracks", label: "Tracks", icon: Music },
+  { href: "/trends/genres", label: "Genres", icon: Disc },
 ];
-
-const SIDEBAR_WIDTH = "w-64"; // simplify for mobile animation
 
 export default function TrendsLayout({
   children,
@@ -21,70 +27,122 @@ export default function TrendsLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 1280px)");
+
+  // Default to collapsed on mobile, expanded on desktop
+  const [isCollapsed, setIsCollapsed] = useState(true);
+
+  // Sync collapsed state with mobile status
+  useEffect(() => {
+    setIsCollapsed(isMobile);
+  }, [isMobile]);
+
+  const sidebarWidth = isCollapsed ? "w-20" : "w-64";
 
   return (
     <div className='flex min-h-screen'>
-      {/* Mobile Toggle Button */}
-      {/* <button
-        className='md:hidden p-4 fixed top-0 left-0 z-50'
-        onClick={() => setOpen(true)}
-      >
-        <Menu className='text-white' />
-      </button> */}
-
-      {/* Backdrop (mobile only) */}
-      {open && (
+      {/* Mobile Backdrop for Expanded Sidebar */}
+      {!isCollapsed && (
         <div
-          className='fixed inset-0 bg-black/50 z-40 md:hidden'
-          onClick={() => setOpen(false)}
+          className='fixed inset-0 bg-black/50 z-30 md:hidden'
+          onClick={() => setIsCollapsed(true)}
         />
       )}
 
       {/* Sidebar */}
       <aside
         className={cn(
-          SIDEBAR_WIDTH,
-          "bg-sidebar border-r border-sidebar-border p-6 pt-8 fixed top-navbar-sm md:top-navbar-md lg:top-navbar-lg h-sidebar-sm md:h-sidebar-md lg:h-sidebar-lg z-40 transition-transform duration-300",
-          // Desktop: always visible
-          "md:translate-x-0",
-          // Mobile: slide-in / slide-out
-          open ? "translate-x-0" : "-translate-x-full"
+          sidebarWidth,
+          "bg-sidebar border-r border-sidebar-border fixed top-navbar-sm md:top-navbar-md lg:top-navbar-lg bottom-0 z-40 transition-all duration-300 flex flex-col translate-x-0"
         )}
       >
-        {/* Close button (mobile) */}
-        <button className='md:hidden mb-4' onClick={() => setOpen(false)}>
-          <X className='text-sidebar-foreground' />
-        </button>
+        <div className='p-6 pt-8 flex-1'>
+          <h2
+            className={cn(
+              "text-xl font-semibold text-sidebar-foreground mb-6 transition-opacity duration-300 h-7 overflow-hidden whitespace-nowrap",
+              isCollapsed ? "opacity-0 w-0" : "opacity-100"
+            )}
+          >
+            Trends
+          </h2>
 
-        <h2 className='text-xl font-semibold text-sidebar-foreground mb-6'>
-          Trends
-        </h2>
+          <nav className='flex flex-col gap-2'>
+            {sidebarLinks.map((link) => {
+              const active = pathname === link.href;
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "flex items-center rounded-lg text-sm transition-all duration-200 group relative",
+                    isCollapsed ? "justify-center p-3" : "px-3 py-2 gap-3",
+                    active
+                      ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                      : "text-sidebar-accent-foreground hover:bg-sidebar-accent"
+                  )}
+                  onClick={() => {
+                    // Only auto-collapse on mobile
+                    if (window.innerWidth < 768) {
+                      setIsCollapsed(true);
+                    }
+                  }}
+                  title={isCollapsed ? link.label : undefined}
+                >
+                  <Icon
+                    className={cn(
+                      "flex-shrink-0 transition-all duration-200",
+                      isCollapsed ? "w-6 h-6" : "w-5 h-5"
+                    )}
+                  />
+                  <span
+                    className={cn(
+                      "whitespace-nowrap transition-all duration-300 overflow-hidden",
+                      isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+                    )}
+                  >
+                    {link.label}
+                  </span>
 
-        <nav className='flex flex-col gap-1'>
-          {sidebarLinks.map((link) => {
-            const active = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "px-3 py-2 rounded-lg text-sm transition",
-                  active
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                    : "text-sidebar-accent-foreground hover:bg-sidebar-accent"
-                )}
-                onClick={() => setOpen(false)} // close drawer on link click
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
+                  {/* Tooltip for collapsed state */}
+                  {isCollapsed && (
+                    <div className='absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 shadow-md border border-border transition-opacity'>
+                      {link.label}
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Toggle Button */}
+        <div className='flex p-4 border-t border-sidebar-border justify-end'>
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className='p-2 rounded-lg hover:bg-sidebar-accent text-sidebar-accent-foreground transition-colors'
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isMobile ? (
+              isCollapsed ? (
+                <ChevronRight className='w-5 h-5' />
+              ) : (
+                <ChevronLeft className='w-5 h-5' />
+              )
+            ) : null}
+          </button>
+        </div>
       </aside>
 
       {/* Page Content */}
-      <main className={cn("flex-1 p-6", "md:ml-64")}>{children}</main>
+      <main
+        className={cn(
+          "flex-1 p-6 transition-all duration-300",
+          isCollapsed ? "ml-20" : "ml-20 md:ml-64"
+        )}
+      >
+        {children}
+      </main>
     </div>
   );
 }
