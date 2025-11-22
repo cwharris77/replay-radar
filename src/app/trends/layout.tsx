@@ -1,5 +1,6 @@
 "use client";
 
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import {
   ChevronLeft,
@@ -11,7 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const sidebarLinks = [
   { href: "/trends", label: "Overview", icon: LayoutDashboard },
@@ -20,16 +21,21 @@ const sidebarLinks = [
   { href: "/trends/genres", label: "Genres", icon: Disc },
 ];
 
-const isMobile = () => window.matchMedia("(max-width: 1280px)").matches;
-
 export default function TrendsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  // Default to collapsed on mobile (could be enhanced with media query hook)
-  const [isCollapsed, setIsCollapsed] = useState(isMobile());
+  const isMobile = useMediaQuery("(max-width: 1280px)");
+
+  // Default to collapsed on mobile, expanded on desktop
+  const [isCollapsed, setIsCollapsed] = useState(true);
+
+  // Sync collapsed state with mobile status
+  useEffect(() => {
+    setIsCollapsed(isMobile);
+  }, [isMobile]);
 
   const sidebarWidth = isCollapsed ? "w-20" : "w-64";
 
@@ -117,7 +123,7 @@ export default function TrendsLayout({
             className='p-2 rounded-lg hover:bg-sidebar-accent text-sidebar-accent-foreground transition-colors'
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {isMobile() ? (
+            {isMobile ? (
               isCollapsed ? (
                 <ChevronRight className='w-5 h-5' />
               ) : (
