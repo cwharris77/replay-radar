@@ -4,11 +4,12 @@ import { useNextAuth } from "@/hooks/useNextAuth";
 import { login, logout } from "@/lib/actions/auth";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useRef, useState } from "react";
-import { Tooltip } from "./Tooltip";
+import { Suspense, useRef, useState } from "react";
 import { LoginIcon, LogoutIcon, UserIcon } from "./icons/AuthIcons";
+import Loading from "./Loading";
+import Tooltip from "./Tooltip";
 
-export const ProfileButton = () => {
+const ProfileButtonContent = () => {
   const { session, isAuthenticated } = useNextAuth();
   const [showTooltip, setShowTooltip] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -106,3 +107,11 @@ export const ProfileButton = () => {
     </div>
   );
 };
+
+export default function ProfileButton() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ProfileButtonContent />
+    </Suspense>
+  );
+}

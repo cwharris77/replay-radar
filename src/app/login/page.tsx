@@ -1,5 +1,6 @@
 "use client";
 
+import { Loading } from "@/components";
 import { useNextAuth } from "@/hooks/useNextAuth";
 import { login } from "@/lib/actions/auth";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -72,13 +73,7 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense
-      fallback={
-        <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900'>
-          <div className='text-foreground'>Loading...</div>
-        </div>
-      }
-    >
+    <Suspense fallback={<Loading />}>
       <LoginContent />
     </Suspense>
   );
