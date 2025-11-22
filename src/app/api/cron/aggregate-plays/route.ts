@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
     await dailyCollection.updateOne(
       { userId, day },
       {
-        $inc: { minutes },
+        $inc: { minutes, trackCount: plays.length || 0 },
         $set: { updatedAt: new Date() },
       },
       { upsert: true }
@@ -102,5 +102,7 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({
+    success: true,
+  });
 }
