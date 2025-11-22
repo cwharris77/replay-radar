@@ -1,4 +1,4 @@
-import { TimeRange } from "@/app/constants";
+import { TimeRange, TrendPeriod } from "@/app/constants";
 import { ObjectId } from "mongodb";
 import clientPromise from "../mongodb";
 
@@ -17,7 +17,7 @@ export interface TopItem {
 export interface TopSnapshot {
   _id?: ObjectId;
   userId: string;
-  timeRange: TimeRange;
+  timeRange: TimeRange | TrendPeriod;
   items: TopItem[];
   takenAt: Date;
 }

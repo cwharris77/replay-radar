@@ -1,11 +1,16 @@
-import { timeRange as timeRanges } from "@/app/constants";
+import { trendPeriod, TrendPeriod } from "@/app/constants";
 import { authOptions } from "@/auth/authOptions";
 import { LoginPrompt } from "@/components";
 import { getTopItemTrendData } from "@/utils/trends";
 import { getServerSession } from "next-auth";
+import { TimeRangeSelector } from "../components/TimeRangeSelector";
 import TrendLineChart from "../components/TrendLineChart";
 
-export default async function TracksPage() {
+export default async function TracksPage({
+  searchParams,
+}: {
+  searchParams: { range?: string };
+}) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -22,23 +27,27 @@ export default async function TracksPage() {
     );
   }
 
+  const range = (searchParams.range as TrendPeriod) || trendPeriod.daily;
   const limit = 5;
   const { labels, series } = await getTopItemTrendData({
     userId: session.user.id,
-    timeRange: timeRanges.short,
+    period: range,
     limit,
     type: "tracks",
   });
 
   return (
     <div className='max-w-6xl mx-auto px-4 py-6 md:py-8'>
-      <h1 className='text-2xl md:text-3xl font-bold text-white mb-4'>
-        Track Trends
-      </h1>
+      <div className='flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4'>
+        <h1 className='text-2xl md:text-3xl font-bold text-white'>
+          Track Trends
+        </h1>
+        <TimeRangeSelector />
+      </div>
 
       {series.length > 0 ? (
         <div className='bg-card border border-border rounded-xl p-4'>
-          <TrendLineChart 
+          <TrendLineChart
             labels={labels}
             series={series}
             maxRank={limit}
@@ -47,7 +56,7 @@ export default async function TracksPage() {
         </div>
       ) : (
         <div className='bg-card border border-border rounded-xl p-4 text-muted-foreground'>
-          No trend data yet. Check back after the daily snapshot runs.
+          No trend data yet for this time range.
         </div>
       )}
     </div>
