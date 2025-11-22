@@ -9,8 +9,9 @@ import TrendLineChart from "../components/TrendLineChart";
 export default async function ArtistsPage({
   searchParams,
 }: {
-  searchParams: { range?: string };
+  searchParams: Promise<{ range?: string }>;
 }) {
+  const params = await searchParams;
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -27,7 +28,7 @@ export default async function ArtistsPage({
     );
   }
 
-  const range = (searchParams.range as TrendPeriod) || trendPeriod.daily;
+  const range = (params.range as TrendPeriod) || trendPeriod.daily;
   const limit = 5;
   const { labels, series } = await getTopItemTrendData({
     userId: session.user.id,
