@@ -9,7 +9,6 @@ interface TooltipProps {
   triggerRef: React.RefObject<HTMLElement | null>;
   position?: "top" | "bottom" | "left" | "right";
   align?: "start" | "center" | "end";
-  offset?: number;
   arrowOffset?: number;
 }
 
@@ -20,7 +19,7 @@ export const Tooltip = ({
   triggerRef,
   position = "bottom",
   align = "end",
-  offset = 12,
+
   arrowOffset = 32,
 }: TooltipProps) => {
   const tooltipRef = useRef<HTMLDivElement>(null);
