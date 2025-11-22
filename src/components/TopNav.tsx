@@ -1,4 +1,5 @@
 "use client";
+import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -88,50 +89,64 @@ const TopNav = () => {
       </nav>
 
       {/* Mobile Menu Drawer */}
-      {mobileMenuOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className='fixed inset-0 bg-black/50 z-50 lg:hidden'
-            onClick={() => setMobileMenuOpen(false)}
-          />
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className='fixed inset-0 bg-black/50 z-50 lg:hidden'
+              onClick={() => setMobileMenuOpen(false)}
+            />
 
-          {/* Drawer */}
-          <div className='fixed top-0 left-0 h-full w-64 bg-background border-r border-border z-50 lg:hidden shadow-xl'>
-            <div className='flex flex-col h-full'>
-              {/* Header */}
-              <div className='flex items-center justify-between p-4 border-b border-border'>
-                <h2 className='text-lg font-semibold text-foreground'>Menu</h2>
-                <button
-                  onClick={() => setMobileMenuOpen(false)}
-                  className='p-2 hover:bg-secondary rounded-lg transition-colors'
-                  aria-label='Close menu'
-                >
-                  <X className='w-5 h-5 text-foreground' />
-                </button>
-              </div>
-
-              {/* Navigation Links */}
-              <nav className='flex flex-col p-4 gap-2'>
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className='fixed top-0 left-0 h-full w-64 bg-background border-r border-border z-50 lg:hidden shadow-xl'
+            >
+              <div className='flex flex-col h-full'>
+                {/* Header */}
+                <div className='flex items-center justify-between p-4 border-b border-border'>
+                  <h2 className='text-lg font-semibold text-foreground'>
+                    Menu
+                  </h2>
+                  <button
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-3 rounded-lg text-[15px] font-medium transition-colors ${
-                      pathname === link.href
-                        ? "bg-primary text-primary-foreground"
-                        : "text-foreground hover:bg-secondary"
-                    }`}
+                    className='p-2 hover:bg-secondary rounded-lg transition-colors'
+                    aria-label='Close menu'
                   >
-                    {link.label}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-          </div>
-        </>
-      )}
+                    <X className='w-5 h-5 text-foreground' />
+                  </button>
+                </div>
+
+                {/* Navigation Links */}
+                <nav className='flex flex-col p-4 gap-2'>
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`px-4 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                        pathname === link.href
+                          ? "bg-primary text-primary-foreground"
+                          : "text-foreground hover:bg-secondary"
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 };

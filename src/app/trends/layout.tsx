@@ -27,7 +27,7 @@ export default function TrendsLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isMobile = useMediaQuery("(max-width: 1280px)");
+  const isMobile = useMediaQuery("(max-width: 1279px)");
 
   // Default to collapsed on mobile, expanded on desktop
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -44,7 +44,7 @@ export default function TrendsLayout({
       {/* Mobile Backdrop for Expanded Sidebar */}
       {!isCollapsed && (
         <div
-          className='fixed inset-0 bg-black/50 z-30 md:hidden'
+          className='fixed inset-0 bg-black/50 z-30 xl:hidden'
           onClick={() => setIsCollapsed(true)}
         />
       )}
@@ -53,14 +53,14 @@ export default function TrendsLayout({
       <aside
         className={cn(
           sidebarWidth,
-          "bg-sidebar border-r border-sidebar-border fixed top-navbar-sm md:top-navbar-md lg:top-navbar-lg bottom-0 z-40 transition-all duration-300 flex flex-col translate-x-0"
+          "bg-sidebar border-r border-sidebar-border fixed top-navbar-sm md:top-navbar-md lg:top-navbar-lg bottom-0 z-45 transition-all duration-300 flex flex-col justify-center items-center translate-x-0"
         )}
       >
-        <div className='p-6 pt-8 flex-1'>
+        <div className='p-6 pt-8 flex-1 w-full'>
           <h2
             className={cn(
-              "text-xl font-semibold text-sidebar-foreground mb-6 transition-opacity duration-300 h-7 overflow-hidden whitespace-nowrap",
-              isCollapsed ? "opacity-0 w-0" : "opacity-100"
+              "text-xl font-semibold text-sidebar-foreground mb-6 transition-all duration-300 h-7 overflow-hidden whitespace-nowrap",
+              isCollapsed ? "opacity-0 w-0" : "opacity-100 delay-100"
             )}
           >
             Trends
@@ -83,7 +83,7 @@ export default function TrendsLayout({
                   )}
                   onClick={() => {
                     // Only auto-collapse on mobile
-                    if (window.innerWidth < 768) {
+                    if (window.innerWidth < 1280) {
                       setIsCollapsed(true);
                     }
                   }}
@@ -98,7 +98,9 @@ export default function TrendsLayout({
                   <span
                     className={cn(
                       "whitespace-nowrap transition-all duration-300 overflow-hidden",
-                      isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+                      isCollapsed
+                        ? "w-0 opacity-0"
+                        : "w-auto opacity-100 delay-100"
                     )}
                   >
                     {link.label}
@@ -117,7 +119,7 @@ export default function TrendsLayout({
         </div>
 
         {/* Toggle Button */}
-        <div className='flex p-4 border-t border-sidebar-border justify-end'>
+        <div className='flex p-4 border-t border-sidebar-border justify-end w-full'>
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className='p-2 rounded-lg hover:bg-sidebar-accent text-sidebar-accent-foreground transition-colors'
@@ -125,9 +127,13 @@ export default function TrendsLayout({
           >
             {isMobile ? (
               isCollapsed ? (
-                <ChevronRight className='w-5 h-5' />
+                <div className='w-10 h-10 rounded-full flex items-center justify-center outline outline-primary'>
+                  <ChevronRight className='w-5 h-5' />
+                </div>
               ) : (
-                <ChevronLeft className='w-5 h-5' />
+                <div className='w-10 h-10 rounded-full flex items-center justify-center outline outline-primary'>
+                  <ChevronLeft className='w-5 h-5' />
+                </div>
               )
             ) : null}
           </button>
@@ -138,7 +144,7 @@ export default function TrendsLayout({
       <main
         className={cn(
           "flex-1 p-6 transition-all duration-300",
-          isCollapsed ? "ml-20" : "ml-20 md:ml-64"
+          isCollapsed ? "ml-20" : "ml-20 xl:ml-64"
         )}
       >
         {children}
