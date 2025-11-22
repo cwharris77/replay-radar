@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/top-snapshot",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/aggregate-trends",
+      "schedule": "0 8 1 * *"
     }
   ]
 }

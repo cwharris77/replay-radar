@@ -76,28 +76,38 @@ export default function TrendLineChart({
         legend: { display: true, position: "bottom" as const },
         tooltip: {
           callbacks: {
+            title: (items) => {
+              if (!items.length) return "";
+              return items[0].label; // Show date
+            },
             label: (ctx: TooltipItem<"line">) => {
               const label = ctx.dataset?.label ?? "";
               const value =
                 typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
-              if (value == null)
-                return `${label}: ${isRank ? "not ranked" : 0}`;
+              if (value == null) return `${label}: Not ranked`;
               return isRank ? `${label}: #${value}` : `${label}: ${value}`;
             },
           },
         },
       },
       scales: {
-        x: { grid: { display: false } },
+        x: {
+          grid: { display: false },
+          ticks: {
+            maxTicksLimit: 8, // Limit x-axis labels to avoid clutter
+          },
+        },
         y: isRank
           ? {
               reverse: true,
               suggestedMin: 1,
               suggestedMax: maxRank,
+              title: { display: true, text: "Rank" },
               ticks: { stepSize: 1, precision: 0, callback: (v) => `#${v}` },
             }
           : {
               beginAtZero: true,
+              title: { display: true, text: "Count" },
             },
       },
     };

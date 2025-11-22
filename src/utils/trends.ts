@@ -1,45 +1,111 @@
-import { TimeRange } from "@/app/constants";
+import {
+  timeRange,
+  TimeRange,
+  TrendPeriod,
+  trendPeriod,
+} from "@/app/constants";
+import {
+  getMonthlyTopGenresCollection,
+  getYearlyTopGenresCollection,
+} from "@/lib/models/AggregatedGenreSnapshot";
+import {
+  getMonthlyTopArtistsCollection,
+  getMonthlyTopTracksCollection,
+  getYearlyTopArtistsCollection,
+  getYearlyTopTracksCollection,
+} from "@/lib/models/AggregatedTopSnapshot";
 import { getGenreSnapshotCollection } from "@/lib/models/GenreSnapshot";
-import { getArtistsSnapshotCollection, getTracksSnapshotCollection } from "@/lib/models/TopSnapshot";
+import {
+  getArtistsSnapshotCollection,
+  getTracksSnapshotCollection,
+} from "@/lib/models/TopSnapshot";
 
-/**
- * Returns chart data (labels + series) showing historical top 5 tracks.
- * Each track that was ever in the top 5 is included.
- */
 /**
  * Returns chart data (labels + series) showing historical top items (tracks/artists).
  */
 export async function getTopItemTrendData({
   userId,
-  timeRange,
+  period = trendPeriod.daily,
   limit = 5,
   type,
 }: {
   userId: string;
-  timeRange: TimeRange;
+  period?: TrendPeriod;
   limit?: number;
   type: "artists" | "tracks";
 }): Promise<{
   labels: string[];
   series: { id: string; name: string; data: (number | null)[] }[];
 }> {
-  const collection =
-    type === "artists"
-      ? await getArtistsSnapshotCollection()
-      : await getTracksSnapshotCollection();
+  let collection;
+  switch (type) {
+    case "artists":
+      switch (period) {
+        case trendPeriod.monthly:
+          collection = await getMonthlyTopArtistsCollection();
+          break;
+        case trendPeriod.yearly:
+          collection = await getYearlyTopArtistsCollection();
+          break;
+        case trendPeriod.daily:
+          collection = await getArtistsSnapshotCollection();
+          break;
+        default:
+          collection = await getArtistsSnapshotCollection();
+      }
+      break;
+    case "tracks":
+      switch (period) {
+        case trendPeriod.monthly:
+          collection = await getMonthlyTopTracksCollection();
+          break;
+        case trendPeriod.yearly:
+          collection = await getYearlyTopTracksCollection();
+          break;
+        case trendPeriod.daily:
+          collection = await getTracksSnapshotCollection();
+          break;
+        default:
+          collection = await getTracksSnapshotCollection();
+      }
+      break;
+    default:
+      throw new Error("Invalid type");
+  }
 
-  // 1. Fetch all snapshots for this user/timeRange, sorted by date ascending
+  let timeRangeToFetch: TimeRange | TrendPeriod = timeRange.short;
+  switch (period) {
+    case trendPeriod.monthly:
+      timeRangeToFetch = trendPeriod.monthly;
+      break;
+    case trendPeriod.yearly:
+      timeRangeToFetch = trendPeriod.yearly;
+      break;
+    case trendPeriod.daily:
+      timeRangeToFetch = timeRange.short;
+      break;
+    default:
+      timeRangeToFetch = timeRange.short;
+  }
+
   const snapshots = await collection
-    .find({ userId, timeRange })
+    .find({ userId, timeRange: timeRangeToFetch })
     .sort({ takenAt: 1 })
     .toArray();
 
-  // 2. Build labels and series
-  const labels = snapshots.map((snap) =>
-    snap.takenAt.toISOString().slice(0, 10)
-  );
+  const labels = snapshots.map((snap) => {
+    if (period === trendPeriod.monthly) {
+      const date = new Date(snap.takenAt);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+    } else if (period === trendPeriod.yearly) {
+      return `${new Date(snap.takenAt).getFullYear()}`;
+    }
+    return snap.takenAt.toISOString().slice(0, 10);
+  });
 
-  // Map of itemId -> series object
   const itemMap = new Map<
     string,
     { id: string; name: string; data: (number | null)[] }
@@ -56,60 +122,89 @@ export async function getTopItemTrendData({
           data: Array(snapshots.length).fill(null),
         });
       }
-
-      // rankIndex 0 = #1
       itemMap.get(item.id)!.data[idx] = rankIndex + 1;
     });
   });
 
-  const series = Array.from(itemMap.values());
-
-  return { labels, series };
+  return { labels, series: Array.from(itemMap.values()) };
 }
 
 /**
  * Returns chart data (labels + series) showing historical top genres.
  */
-export async function getTopGenreTrendData({
+export async function getGenreTrendData({
   userId,
-  timeRange,
-  limit = 5,
+  period,
+  limit,
 }: {
   userId: string;
-  timeRange: TimeRange;
-  limit?: number;
+  period: TrendPeriod;
+  limit: number;
 }): Promise<{
   labels: string[];
   series: { id: string; name: string; data: (number | null)[] }[];
 }> {
-  const collection = await getGenreSnapshotCollection();
+  let collection;
+  switch (period) {
+    case trendPeriod.monthly:
+      collection = await getMonthlyTopGenresCollection();
+      break;
+    case trendPeriod.yearly:
+      collection = await getYearlyTopGenresCollection();
+      break;
+    case trendPeriod.daily:
+      collection = await getGenreSnapshotCollection();
+      break;
+    default:
+      throw new Error("Invalid period");
+  }
 
-  // 1. Fetch all snapshots for this user/timeRange, sorted by date ascending
+  let timeRangeToFetch: TimeRange | TrendPeriod = timeRange.short;
+  switch (period) {
+    case trendPeriod.daily:
+      timeRangeToFetch = timeRange.short;
+      break;
+    case trendPeriod.monthly:
+      timeRangeToFetch = trendPeriod.monthly;
+      break;
+    case trendPeriod.yearly:
+      timeRangeToFetch = trendPeriod.yearly;
+      break;
+    default:
+      throw new Error("Invalid period");
+  }
+
   const snapshots = await collection
-    .find({ userId, timeRange })
+    .find({ userId, timeRange: timeRangeToFetch })
     .sort({ takenAt: 1 })
     .toArray();
 
-  // 2. Build labels and series
-  const labels = snapshots.map((snap) =>
-    snap.takenAt.toISOString().slice(0, 10)
-  );
+  const labels = snapshots.map((snap) => {
+    if (period === trendPeriod.monthly) {
+      const date = new Date(snap.takenAt);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+    } else if (period === trendPeriod.yearly) {
+      return `${new Date(snap.takenAt).getFullYear()}`;
+    }
+    return snap.takenAt.toISOString().slice(0, 10);
+  });
 
-  // Map of genre name -> series object (genres don't have IDs usually, using name as ID)
   const genreMap = new Map<
     string,
     { id: string; name: string; data: (number | null)[] }
   >();
 
   snapshots.forEach((snap, idx) => {
-    // Convert counts to array of { name, count } and sort by count descending
     const sortedGenres = Object.entries(snap.counts)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, limit);
 
     sortedGenres.forEach((genre, rankIndex) => {
-      const id = genre.name; // Genres don't have IDs, use name
+      const id = genre.name;
       if (!genreMap.has(id)) {
         genreMap.set(id, {
           id: id,
@@ -117,13 +212,9 @@ export async function getTopGenreTrendData({
           data: Array(snapshots.length).fill(null),
         });
       }
-
-      // rankIndex 0 = #1
       genreMap.get(id)!.data[idx] = rankIndex + 1;
     });
   });
 
-  const series = Array.from(genreMap.values());
-
-  return { labels, series };
+  return { labels, series: Array.from(genreMap.values()) };
 }
