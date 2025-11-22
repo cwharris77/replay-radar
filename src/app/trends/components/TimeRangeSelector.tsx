@@ -37,8 +37,8 @@ export function TimeRangeSelector() {
             className={cn(
               "px-3 py-1.5 text-sm font-medium rounded-md transition-all",
               isActive
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                ? "bg-primary text-primary-foreground shadow-lg"
+                : "text-muted-foreground hover:text-foreground hover:bg-background/70"
             )}
           >
             {range.label}
