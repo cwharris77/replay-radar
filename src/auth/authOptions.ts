@@ -1,6 +1,6 @@
 import { getUserCollection, SpotifyTokens } from "@/lib/models/User";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
-import { NextAuthOptions } from "next-auth";
+import { NextAuthOptions, Profile } from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 import { cookies } from "next/headers";
 
@@ -44,11 +44,12 @@ export function createAuthOptions(): NextAuthOptions {
       signIn: "/login",
     },
     callbacks: {
-      async jwt({ token, account }) {
+      async jwt({ token, account, profile }) {
         // Initial sign-in
         if (account) {
           token.accessToken = account.access_token;
           token.expiresAt = account.expires_at! * 1000;
+          token.profile = profile;
 
           if (account?.refresh_token) {
             token.refreshToken = account.refresh_token;
@@ -87,6 +88,7 @@ export function createAuthOptions(): NextAuthOptions {
         token.accessToken = refreshed.accessToken;
         token.expiresAt = refreshed.expiresAt;
         token.refreshToken = refreshed.refreshToken ?? token.refreshToken;
+        token.profile = profile;
 
         return token;
       },
@@ -96,6 +98,7 @@ export function createAuthOptions(): NextAuthOptions {
         session.user.refreshToken = token.refreshToken as string | undefined;
         session.user.expiresAt = token.expiresAt as number | undefined;
         session.user.role = token.role as "user" | "admin" | undefined;
+        session.user.profile = token.profile as Profile | undefined;
         return session;
       },
       /**

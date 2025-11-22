@@ -41,6 +41,5 @@ export const config = {
     "/artists/:path*",
     "/tracks/:path*",
     "/genres/:path*",
-    "/login", // Add login to check for authenticated users
   ],
 };

@@ -1,13 +1,23 @@
 "use client";
 
+import { useNextAuth } from "@/hooks/useNextAuth";
 import { login } from "@/lib/actions/auth";
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect } from "react";
 
 function LoginContent() {
+  const { session, status } = useNextAuth();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
   const error = searchParams.get("error");
+
+  // Redirect authenticated users
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      router.push(callbackUrl);
+    }
+  }, [status, session, router, callbackUrl]);
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900'>
@@ -15,7 +25,9 @@ function LoginContent() {
         <div className='bg-card border border-border rounded-2xl p-8 shadow-2xl'>
           {/* Logo/Title */}
           <div className='text-center mb-8'>
-            <h1 className='text-3xl font-bold text-foreground mb-2'>Replay Radar</h1>
+            <h1 className='text-3xl font-bold text-foreground mb-2'>
+              Replay Radar
+            </h1>
             <p className='text-muted-foreground'>
               Sign in to view your Spotify insights
             </p>
