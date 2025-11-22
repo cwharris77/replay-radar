@@ -31,7 +31,7 @@ export default function TimeRangeSelector({
             "min-w-[90px] px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-medium sm:font-semibold transition-all duration-200 border border-border text-sm sm:text-base",
             selectedRange === range.value
               ? "bg-primary text-primary-foreground shadow-lg"
-              : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground active:scale-95",
+              : "bg-muted text-muted-foreground hover:bg-background/70 hover:text-foreground active:scale-95",
             buttonClassName
           )}
         >
