@@ -14,13 +14,10 @@ import {
   getYearlyTopArtistsCollection,
   getYearlyTopTracksCollection,
 } from "@/lib/models/AggregatedTopSnapshot";
-import { getGenreSnapshotCollection } from "@/lib/models/GenreSnapshot";
 import {
   getArtistsSnapshotCollection,
   getTracksSnapshotCollection,
 } from "@/lib/models/TopSnapshot";
-
-// ... interfaces ...
 
 /**
  * Returns chart data (labels + series) showing historical top items (tracks/artists).
@@ -40,29 +37,46 @@ export async function getTopItemTrendData({
   series: { id: string; name: string; data: (number | null)[] }[];
 }> {
   let collection;
-
-  if (type === "artists") {
-    if (period === trendPeriod.monthly) {
-      collection = await getMonthlyTopArtistsCollection();
-    } else if (period === trendPeriod.yearly) {
-      collection = await getYearlyTopArtistsCollection();
-    } else {
-      collection = await getArtistsSnapshotCollection();
-    }
-  } else {
-    // tracks
-    if (period === trendPeriod.monthly) {
-      collection = await getMonthlyTopTracksCollection();
-    } else if (period === trendPeriod.yearly) {
-      collection = await getYearlyTopTracksCollection();
-    } else {
-      collection = await getTracksSnapshotCollection();
-    }
+  switch (type) {
+    case "artists":
+      switch (period) {
+        case trendPeriod.monthly:
+          collection = await getMonthlyTopArtistsCollection();
+          break;
+        case trendPeriod.yearly:
+          collection = await getYearlyTopArtistsCollection();
+          break;
+        default:
+          collection = await getArtistsSnapshotCollection();
+      }
+      break;
+    case "tracks":
+      switch (period) {
+        case trendPeriod.monthly:
+          collection = await getMonthlyTopTracksCollection();
+          break;
+        case trendPeriod.yearly:
+          collection = await getYearlyTopTracksCollection();
+          break;
+        default:
+          collection = await getTracksSnapshotCollection();
+      }
+      break;
+    default:
+      throw new Error("Invalid type");
   }
 
   let timeRangeToFetch: TimeRange | TrendPeriod = timeRange.short;
-  if (period === trendPeriod.monthly) timeRangeToFetch = trendPeriod.monthly;
-  if (period === trendPeriod.yearly) timeRangeToFetch = trendPeriod.yearly;
+  switch (period) {
+    case trendPeriod.monthly:
+      timeRangeToFetch = trendPeriod.monthly;
+      break;
+    case trendPeriod.yearly:
+      timeRangeToFetch = trendPeriod.yearly;
+      break;
+    default:
+      timeRangeToFetch = timeRange.short;
+  }
 
   const snapshots = await collection
     .find({ userId, timeRange: timeRangeToFetch })
@@ -71,14 +85,12 @@ export async function getTopItemTrendData({
 
   const labels = snapshots.map((snap) => {
     if (period === trendPeriod.monthly) {
-      // Format: YYYY-MM
       const date = new Date(snap.takenAt);
       return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
         2,
         "0"
       )}`;
     } else if (period === trendPeriod.yearly) {
-      // Format: YYYY
       return `${new Date(snap.takenAt).getFullYear()}`;
     }
     return snap.takenAt.toISOString().slice(0, 10);
@@ -123,17 +135,28 @@ export async function getGenreTrendData({
   series: { id: string; name: string; data: (number | null)[] }[];
 }> {
   let collection;
-  if (period === trendPeriod.monthly) {
-    collection = await getMonthlyTopGenresCollection();
-  } else if (period === trendPeriod.yearly) {
-    collection = await getYearlyTopGenresCollection();
-  } else {
-    collection = await getGenreSnapshotCollection();
+  switch (period) {
+    case trendPeriod.monthly:
+      collection = await getMonthlyTopGenresCollection();
+      break;
+    case trendPeriod.yearly:
+      collection = await getYearlyTopGenresCollection();
+      break;
+    default:
+      throw new Error("Invalid period");
   }
 
   let timeRangeToFetch: TimeRange | TrendPeriod = timeRange.short;
-  if (period === trendPeriod.monthly) timeRangeToFetch = trendPeriod.monthly;
-  if (period === trendPeriod.yearly) timeRangeToFetch = trendPeriod.yearly;
+  switch (period) {
+    case trendPeriod.monthly:
+      timeRangeToFetch = trendPeriod.monthly;
+      break;
+    case trendPeriod.yearly:
+      timeRangeToFetch = trendPeriod.yearly;
+      break;
+    default:
+      throw new Error("Invalid period");
+  }
 
   const snapshots = await collection
     .find({ userId, timeRange: timeRangeToFetch })

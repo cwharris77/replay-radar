@@ -27,7 +27,6 @@ async function aggregateItems(
   snapshots: TopSnapshot[],
   limit: number = 20
 ): Promise<TopSnapshot["items"]> {
-  // ... implementation unchanged ...
   const appearanceCounts = new Map<string, { count: number; item: any }>();
 
   snapshots.forEach((snap) => {
@@ -53,7 +52,6 @@ async function aggregateGenres(
   snapshots: GenreSnapshot[],
   limit: number = 20
 ): Promise<Record<string, number>> {
-  // ... implementation unchanged ...
   const genreCounts = new Map<string, number>();
 
   snapshots.forEach((snap) => {
@@ -175,7 +173,6 @@ export async function GET() {
       const yearlyGenresCollection = await getYearlyTopGenresCollection();
 
       // Fetch monthly snapshots for this year from the MONTHLY collection
-      // Note: We just upserted the current month, so it's included.
       const monthlyArtists = await monthlyArtistsCollection
         .find({
           userId,
