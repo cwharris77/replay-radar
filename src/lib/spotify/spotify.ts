@@ -1,4 +1,13 @@
 import { TimeRange, timeRange, TopDataType } from "@/app/constants";
+import {
+  MOCK_ARTISTS_DAILY,
+  MOCK_ARTISTS_MONTHLY,
+  MOCK_ARTISTS_YEARLY,
+  MOCK_TRACKS,
+  MOCK_TRACKS_DAILY,
+  MOCK_TRACKS_MONTHLY,
+  MOCK_TRACKS_YEARLY,
+} from "@/lib/demo/mockData";
 import { Artist, SpotifyResponse, Track } from "@/types";
 import { Session } from "next-auth";
 import { refreshAccessToken } from "./refreshAccessToken";
@@ -33,6 +42,30 @@ export async function fetchSpotifyData({
   let accessToken = session?.user?.accessToken;
   if (!accessToken) return [];
 
+  if (session.user.id === "demo") {
+    if (type === "artists") {
+      switch (timeRangeValue) {
+        case timeRange.long:
+          return MOCK_ARTISTS_YEARLY;
+        case timeRange.medium:
+          return MOCK_ARTISTS_MONTHLY;
+        case timeRange.short:
+        default:
+          return MOCK_ARTISTS_DAILY;
+      }
+    } else {
+      switch (timeRangeValue) {
+        case timeRange.long:
+          return MOCK_TRACKS_YEARLY;
+        case timeRange.medium:
+          return MOCK_TRACKS_MONTHLY;
+        case timeRange.short:
+        default:
+          return MOCK_TRACKS_DAILY;
+      }
+    }
+  }
+
   if (session.user.expiresAt && Date.now() > session.user.expiresAt) {
     const { accessToken: refreshedAccessToken } = await refreshAccessToken(
       session.user.refreshToken || ""
@@ -59,6 +92,10 @@ export async function fetchRecentlyPlayed(
 ): Promise<Track[]> {
   let accessToken = session?.user?.accessToken;
   if (!accessToken) return [];
+
+  if (session.user.id === "demo") {
+    return MOCK_TRACKS;
+  }
 
   if (session.user.expiresAt && Date.now() > session.user.expiresAt) {
     const { accessToken: refreshedAccessToken } = await refreshAccessToken(

@@ -1,6 +1,7 @@
 import { getUserCollection, SpotifyTokens } from "@/lib/models/User";
 import { refreshAccessToken } from "@/lib/spotify/refreshAccessToken";
 import { NextAuthOptions, Profile } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import SpotifyProvider from "next-auth/providers/spotify";
 import { cookies } from "next/headers";
 
@@ -39,6 +40,24 @@ export function createAuthOptions(): NextAuthOptions {
           },
         },
       }),
+      CredentialsProvider({
+        id: "demo-login",
+        name: "Demo Account",
+        credentials: {
+          username: { label: "Username", type: "text" },
+        },
+        async authorize(credentials) {
+          if (credentials?.username === "demo") {
+            return {
+              id: "demo",
+              name: "Demo User",
+              email: "demo@example.com",
+              image: "https://picsum.photos/seed/demo/200/200",
+            };
+          }
+          return null;
+        },
+      }),
     ],
     pages: {
       signIn: "/login",
@@ -47,6 +66,16 @@ export function createAuthOptions(): NextAuthOptions {
       async jwt({ token, account, profile }) {
         // Initial sign-in
         if (account) {
+          // Handle Demo User
+          if (account.provider === "demo-login") {
+            token.accessToken = "demo-access-token";
+            token.refreshToken = "demo-refresh-token";
+            token.expiresAt = Date.now() + 365 * 24 * 60 * 60 * 1000; // 1 year
+            token.role = "user";
+            token.sub = "demo";
+            return token;
+          }
+
           token.accessToken = account.access_token;
           token.expiresAt = account.expires_at! * 1000;
           token.profile = profile;
@@ -67,6 +96,12 @@ export function createAuthOptions(): NextAuthOptions {
         const now = Date.now();
         // Ensure expiresAt is a number
         const expiresAt = Number(token.expiresAt ?? 0);
+
+        // Demo token never expires (effectively)
+        if (token.sub === "demo") {
+          return token;
+        }
+
         if (Number.isFinite(expiresAt) && now < expiresAt - 60_000) {
           // 60s buffer
           return token;
@@ -148,6 +183,7 @@ export function createAuthOptions(): NextAuthOptions {
     events: {
       async signIn({ user, account }) {
         if (!account) return;
+        if (account.provider === "demo-login") return;
 
         const users = await getUserCollection();
 

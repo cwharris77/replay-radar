@@ -1,5 +1,6 @@
 import { topDataTypes } from "@/app/constants";
 import authOptions from "@/auth/authOptions";
+import { MOCK_ARTISTS, MOCK_TRACKS } from "@/lib/demo/mockData";
 import { fetchRecentlyPlayed, fetchSpotifyData } from "@/lib/spotify/spotify";
 import { Artist, Track } from "@/types";
 import { getServerSession, Session } from "next-auth";
@@ -25,6 +26,16 @@ export async function getServerAuthData(): Promise<ServerAuthData> {
       topTracks: [],
       recentlyPlayed: [],
       session: null,
+    };
+  }
+
+  if (session.user.id === "demo") {
+    return {
+      isAuthenticated: true,
+      topArtists: MOCK_ARTISTS,
+      topTracks: MOCK_TRACKS,
+      recentlyPlayed: MOCK_TRACKS,
+      session,
     };
   }
 

@@ -20,6 +20,21 @@ import {
   getTracksSnapshotCollection,
 } from "@/lib/models/TopSnapshot";
 
+import {
+  MOCK_ARTIST_TRENDS_DAILY,
+  MOCK_ARTIST_TRENDS_MONTHLY,
+  MOCK_ARTIST_TRENDS_YEARLY,
+  MOCK_GENRE_TRENDS_DAILY,
+  MOCK_GENRE_TRENDS_MONTHLY,
+  MOCK_GENRE_TRENDS_YEARLY,
+  MOCK_TRACK_TRENDS_DAILY,
+  MOCK_TRACK_TRENDS_MONTHLY,
+  MOCK_TRACK_TRENDS_YEARLY,
+  MOCK_TREND_LABELS_DAILY,
+  MOCK_TREND_LABELS_MONTHLY,
+  MOCK_TREND_LABELS_YEARLY,
+} from "@/lib/demo/mockData";
+
 /**
  * Returns chart data (labels + series) showing historical top items (tracks/artists).
  */
@@ -37,6 +52,28 @@ export async function getTopItemTrendData({
   labels: string[];
   series: { id: string; name: string; data: (number | null)[] }[];
 }> {
+  if (userId === "demo") {
+    let labels = MOCK_TREND_LABELS_DAILY;
+    let series: { id: string; name: string; data: (number | null)[] }[] =
+      type === "artists" ? MOCK_ARTIST_TRENDS_DAILY : MOCK_TRACK_TRENDS_DAILY;
+
+    if (period === trendPeriod.monthly) {
+      labels = MOCK_TREND_LABELS_MONTHLY;
+      series =
+        type === "artists"
+          ? MOCK_ARTIST_TRENDS_MONTHLY
+          : MOCK_TRACK_TRENDS_MONTHLY;
+    } else if (period === trendPeriod.yearly) {
+      labels = MOCK_TREND_LABELS_YEARLY;
+      series =
+        type === "artists"
+          ? MOCK_ARTIST_TRENDS_YEARLY
+          : MOCK_TRACK_TRENDS_YEARLY;
+    }
+
+    return { labels, series };
+  }
+
   let collection;
   switch (type) {
     case "artists":
@@ -144,6 +181,22 @@ export async function getGenreTrendData({
   labels: string[];
   series: { id: string; name: string; data: (number | null)[] }[];
 }> {
+  if (userId === "demo") {
+    let labels = MOCK_TREND_LABELS_DAILY;
+    let series: { id: string; name: string; data: (number | null)[] }[] =
+      MOCK_GENRE_TRENDS_DAILY;
+
+    if (period === trendPeriod.monthly) {
+      labels = MOCK_TREND_LABELS_MONTHLY;
+      series = MOCK_GENRE_TRENDS_MONTHLY;
+    } else if (period === trendPeriod.yearly) {
+      labels = MOCK_TREND_LABELS_YEARLY;
+      series = MOCK_GENRE_TRENDS_YEARLY;
+    }
+
+    return { labels, series };
+  }
+
   let collection;
   switch (period) {
     case trendPeriod.monthly:
