@@ -29,16 +29,22 @@ export async function GET(
     const type = typeParam as SpotifyDataType;
     const userId = session.user.id;
 
-    // Check cache first
-    const cachedData = await SpotifyCache.getCache(userId, type, timeRange);
-    if (cachedData) {
-      return NextResponse.json(cachedData.data, { status: 200 });
+    // Check cache first (skip for demo)
+    if (userId !== "demo") {
+      const cachedData = await SpotifyCache.getCache(userId, type, timeRange);
+      if (cachedData) {
+        return NextResponse.json(cachedData.data, { status: 200 });
+      }
     }
 
     let accessToken = session.user.accessToken;
 
-    // Check if token expired
-    if (session.user.expiresAt && Date.now() > session.user.expiresAt) {
+    // Check if token expired (skip for demo)
+    if (
+      userId !== "demo" &&
+      session.user.expiresAt &&
+      Date.now() > session.user.expiresAt
+    ) {
       try {
         const { accessToken: refreshedAccessToken, expiresAt } =
           await refreshAccessToken(session.user.refreshToken || "");
@@ -59,7 +65,10 @@ export async function GET(
       session,
       timeRangeValue: timeRange,
     }); // Cache the new data
-    await SpotifyCache.setCache(userId, type, data, timeRange);
+
+    if (userId !== "demo") {
+      await SpotifyCache.setCache(userId, type, data, timeRange);
+    }
 
     return NextResponse.json(data, { status: 200 });
   } catch (err) {

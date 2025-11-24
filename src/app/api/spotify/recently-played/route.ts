@@ -11,17 +11,21 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    // Check cache first
-    const cachedData = await SpotifyCache.getCache(userId, "recently-played");
+    // Check cache first (skip for demo)
+    if (userId !== "demo") {
+      const cachedData = await SpotifyCache.getCache(userId, "recently-played");
 
-    if (cachedData) {
-      return NextResponse.json(cachedData.data);
+      if (cachedData) {
+        return NextResponse.json(cachedData.data);
+      }
     }
 
     const recentTracks = await fetchRecentlyPlayed(session);
 
     // Cache the transformed data
-    await SpotifyCache.setCache(userId, "recently-played", recentTracks);
+    if (userId !== "demo") {
+      await SpotifyCache.setCache(userId, "recently-played", recentTracks);
+    }
 
     return NextResponse.json(recentTracks);
   } catch (error) {

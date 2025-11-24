@@ -1,9 +1,9 @@
 "use client";
 
 import { useNextAuth } from "@/hooks/useNextAuth";
-import { login, logout } from "@/lib/actions/auth";
+import { logout } from "@/lib/actions/auth";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useRef, useState } from "react";
 import { LoginIcon, LogoutIcon, UserIcon } from "./icons/AuthIcons";
 import Loading from "./Loading";
@@ -14,6 +14,7 @@ const ProfileButtonContent = () => {
   const [showTooltip, setShowTooltip] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const handleSignOut = () => {
     setShowTooltip(false);
@@ -22,7 +23,11 @@ const ProfileButtonContent = () => {
 
   const handleSignIn = () => {
     setShowTooltip(false);
-    login(searchParams.get("callbackUrl") || "/");
+    const callbackUrl = searchParams.get("callbackUrl");
+    const url = callbackUrl
+      ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+      : "/login";
+    router.push(url);
   };
 
   return (
