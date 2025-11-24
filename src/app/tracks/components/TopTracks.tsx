@@ -10,6 +10,7 @@ import {
 import { useNextAuth } from "@/hooks/useNextAuth";
 import { Track } from "@/types";
 import { useEffect, useState } from "react";
+import Filters from "./Filters";
 
 export default function TopTracks() {
   const { topTracks, isLoading, authError, fetchSpotifyData, isAuthenticated } =
@@ -41,11 +42,15 @@ export default function TopTracks() {
   const tracks: Track[] = topTracks || [];
 
   return (
-    <div className='max-w-full mx-auto'>
-      <TimeRangeSelector
-        selectedRange={selectedRange}
-        onRangeChange={handleRangeChange}
-      />
+    <div className='max-w-full mx-auto flex flex-col gap-24'>
+      <div className='flex flex-row justify-between items-center'>
+        <TimeRangeSelector
+          selectedRange={selectedRange}
+          onRangeChange={handleRangeChange}
+        />
+        <Filters />
+      </div>
+
       <div className='default-card-grid' data-testid='top-tracks'>
         {tracks.map((track) => (
           <TiltedCard

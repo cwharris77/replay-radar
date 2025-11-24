@@ -46,7 +46,7 @@ export default function TopArtists() {
   const artists: Artist[] = topArtists || [];
 
   return (
-    <div className='max-w-full mx-auto'>
+    <div className='max-w-full mx-auto flex flex-col gap-24 justify-center'>
       <TimeRangeSelector
         selectedRange={selectedRange}
         onRangeChange={handleRangeChange}

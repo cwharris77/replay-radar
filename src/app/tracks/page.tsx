@@ -7,7 +7,7 @@ export default async function TopTracksPage() {
 
   if (!isAuthenticated) {
     return (
-      <main className='min-h-screen text-white p-6'>
+      <main className='min-h-screen text-foreground p-6'>
         <h1 className='text-3xl font-bold mb-6'>Your Top Tracks</h1>
         <LoginPrompt
           title='Login to View Your Top Tracks'
@@ -18,7 +18,7 @@ export default async function TopTracksPage() {
   }
 
   return (
-    <main className='min-h-screen text-white p-6'>
+    <main className='min-h-screen text-foreground p-6'>
       <h1 className='text-3xl font-bold mb-6'>Your Top Tracks</h1>
       <TopTracks />
     </main>

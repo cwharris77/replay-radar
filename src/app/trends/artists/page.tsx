@@ -17,7 +17,7 @@ export default async function ArtistsPage({
   if (!session) {
     return (
       <div className='max-w-6xl mx-auto px-4 py-6 md:py-8'>
-        <h1 className='text-2xl md:text-3xl font-bold text-white mb-4'>
+        <h1 className='text-2xl md:text-3xl font-bold text-foreground mb-4'>
           Artist Trends
         </h1>
         <LoginPrompt
