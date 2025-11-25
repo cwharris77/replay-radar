@@ -146,6 +146,7 @@ export const MOCK_ARTISTS = MOCK_ARTISTS_DAILY;
 const TRACK_1: Track = {
   id: "demo-track-1",
   name: "Hello World",
+  release_date: "2022-01",
   duration_ms: 215000,
   explicit: false,
   popularity: 88,
@@ -155,7 +156,7 @@ const TRACK_1: Track = {
   album: {
     id: "demo-album-1",
     name: "First Commit",
-    release_date: "2023-01-01",
+    release_date: "2022-01",
     external_urls: { spotify: "#" },
     images: [
       {
@@ -173,6 +174,7 @@ const TRACK_2: Track = {
   id: "demo-track-2",
   name: "Debugging Blues",
   duration_ms: 184000,
+  release_date: "2025-02",
   explicit: true,
   popularity: 75,
   preview_url: null,
@@ -199,6 +201,7 @@ const TRACK_3: Track = {
   id: "demo-track-3",
   name: "Infinite Loop",
   duration_ms: 342000,
+  release_date: "2025-03",
   explicit: false,
   popularity: 95,
   preview_url: null,
@@ -224,6 +227,7 @@ const TRACK_3: Track = {
 const TRACK_4: Track = {
   id: "demo-track-4",
   name: "Null Pointer",
+  release_date: "2025-04",
   duration_ms: 156000,
   explicit: false,
   popularity: 60,
@@ -250,6 +254,7 @@ const TRACK_4: Track = {
 const TRACK_5: Track = {
   id: "demo-track-5",
   name: "Refactor Me",
+  release_date: "2023-05",
   duration_ms: 198000,
   explicit: false,
   popularity: 70,
@@ -277,6 +282,7 @@ const TRACK_6: Track = {
   id: "demo-track-6",
   name: "Syntax Sugar",
   duration_ms: 205000,
+  release_date: "2023",
   explicit: false,
   popularity: 82,
   preview_url: null,
@@ -303,6 +309,7 @@ const TRACK_7: Track = {
   id: "demo-track-7",
   name: "Git Push Force",
   duration_ms: 175000,
+  release_date: "2024-03",
   explicit: true,
   popularity: 68,
   preview_url: null,
