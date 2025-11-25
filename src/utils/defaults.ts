@@ -16,6 +16,7 @@ export function createDefaultTrack(): Track {
   return {
     id: "",
     name: "Loading...",
+    release_date: "2025-11",
     duration_ms: 0,
     explicit: false,
     popularity: 0,

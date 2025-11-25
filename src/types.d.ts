@@ -17,6 +17,7 @@ export interface Artist {
 export interface Track {
   id: string;
   name: string;
+  release_date: string;
   duration_ms: number;
   explicit: boolean;
   popularity: number;
