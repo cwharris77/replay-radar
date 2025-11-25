@@ -123,7 +123,6 @@ export function createAuthOptions(): NextAuthOptions {
         token.accessToken = refreshed.accessToken;
         token.expiresAt = refreshed.expiresAt;
         token.refreshToken = refreshed.refreshToken ?? token.refreshToken;
-        token.profile = profile;
 
         return token;
       },
