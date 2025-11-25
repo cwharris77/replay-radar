@@ -52,6 +52,7 @@ export default async function GenresPage({
             series={series}
             maxRank={limit}
             mode='rank'
+            orientation='horizontal'
           />
         </div>
       ) : (

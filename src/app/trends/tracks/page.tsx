@@ -53,6 +53,7 @@ export default async function TracksPage({
             series={series}
             maxRank={limit}
             mode='rank'
+            orientation='horizontal'
           />
         </div>
       ) : (

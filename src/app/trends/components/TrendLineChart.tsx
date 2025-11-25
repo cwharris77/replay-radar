@@ -40,6 +40,7 @@ export interface TrendLineChartProps {
 }
 
 import { useIsMobile } from "@/hooks/use-is-mobile";
+import { cn } from "@/lib/utils";
 import { generateDistinctColors } from "@/utils/colors";
 
 export default function TrendLineChart({
@@ -81,12 +82,12 @@ export default function TrendLineChart({
     return {
       responsive: true,
       maintainAspectRatio: false,
-      indexAxis: useHorizontal ? "y" : "x",
+      indexAxis: useHorizontal ? "x" : "y",
       interaction: {
         mode: "nearest" as const,
         intersect: false,
         // Larger interaction radius on mobile
-        axis: "x" as const,
+        axis: useHorizontal ? "x" : "y",
       },
       // Add layout padding to prevent clipping
       layout: {
@@ -135,43 +136,8 @@ export default function TrendLineChart({
         },
       },
       scales: {
-        x: isMobile
-          ? // When mobile (horizontal), X becomes the values (rank/count)
-            isRank
-            ? {
-                reverse: true,
-                suggestedMin: 1,
-                suggestedMax: maxRank,
-                title: {
-                  display: true,
-                  text: "Rank",
-                  font: { size: 11 },
-                },
-                ticks: {
-                  stepSize: 1,
-                  precision: 0,
-                  callback: (v) => `#${v}`,
-                  font: { size: 10 },
-                },
-                grid: {
-                  color: "rgba(0, 0, 0, 0.05)",
-                },
-              }
-            : {
-                beginAtZero: true,
-                title: {
-                  display: true,
-                  text: "Count",
-                  font: { size: 11 },
-                },
-                ticks: {
-                  font: { size: 10 },
-                },
-                grid: {
-                  color: "rgba(0, 0, 0, 0.05)",
-                },
-              }
-          : // When desktop (vertical), X is the dates
+        x: useHorizontal
+          ? // Horizontal: X is dates
             {
               grid: { display: false },
               ticks: {
@@ -179,22 +145,13 @@ export default function TrendLineChart({
                 maxRotation: 0,
                 minRotation: 0,
                 font: {
-                  size: 11,
+                  size: isMobile ? 10 : 11,
                 },
                 autoSkip: true,
                 autoSkipPadding: 5,
               },
-            },
-        y: isMobile
-          ? // When mobile (horizontal), Y becomes the dates
-            {
-              grid: { display: false },
-              ticks: {
-                font: { size: 10 },
-                autoSkip: true,
-              },
             }
-          : // When desktop (vertical), Y is the values (rank/count)
+          : // Vertical: X is rank/count
           isRank
           ? {
               reverse: true,
@@ -203,17 +160,13 @@ export default function TrendLineChart({
               title: {
                 display: true,
                 text: "Rank",
-                font: {
-                  size: 12,
-                },
+                font: { size: isMobile ? 11 : 12 },
               },
               ticks: {
                 stepSize: 1,
                 precision: 0,
                 callback: (v) => `#${v}`,
-                font: {
-                  size: 11,
-                },
+                font: { size: isMobile ? 10 : 11 },
               },
               grid: {
                 color: "rgba(0, 0, 0, 0.1)",
@@ -224,25 +177,70 @@ export default function TrendLineChart({
               title: {
                 display: true,
                 text: "Count",
-                font: {
-                  size: 12,
-                },
+                font: { size: isMobile ? 11 : 12 },
               },
               ticks: {
-                font: {
-                  size: 11,
-                },
+                font: { size: isMobile ? 10 : 11 },
               },
               grid: {
                 color: "rgba(0, 0, 0, 0.1)",
               },
             },
+        y: useHorizontal
+          ? // Horizontal: Y is rank/count
+            isRank
+            ? {
+                reverse: true,
+                suggestedMin: 1,
+                suggestedMax: maxRank,
+                title: {
+                  display: true,
+                  text: "Rank",
+                  font: { size: isMobile ? 11 : 12 },
+                },
+                ticks: {
+                  stepSize: 1,
+                  precision: 0,
+                  callback: (v) => `#${v}`,
+                  font: { size: isMobile ? 10 : 11 },
+                },
+                grid: {
+                  color: "rgba(0, 0, 0, 0.1)",
+                },
+              }
+            : {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Count",
+                  font: { size: isMobile ? 11 : 12 },
+                },
+                ticks: {
+                  font: { size: isMobile ? 10 : 11 },
+                },
+                grid: {
+                  color: "rgba(0, 0, 0, 0.1)",
+                },
+              }
+          : // Vertical: Y is dates
+            {
+              grid: { display: false },
+              ticks: {
+                font: { size: isMobile ? 10 : 11 },
+                autoSkip: true,
+              },
+            },
       },
     };
-  }, [maxRank, mode, isMobile]);
+  }, [maxRank, mode, isMobile, useHorizontal]);
 
   return (
-    <div className={"w-full h-screen md:h-[420px]"}>
+    <div
+      className={cn(
+        "w-full md:h-[420px]",
+        useHorizontal ? "h-[280px]" : "h-screen"
+      )}
+    >
       <Line data={data} options={options} />
     </div>
   );
