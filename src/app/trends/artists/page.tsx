@@ -53,6 +53,7 @@ export default async function ArtistsPage({
             series={series}
             maxRank={limit}
             mode='rank'
+            orientation='horizontal'
           />
         </div>
       ) : (
