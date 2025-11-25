@@ -34,7 +34,8 @@ export function createAuthOptions(): NextAuthOptions {
         authorization: {
           url: "https://accounts.spotify.com/authorize",
           params: {
-            scope: "user-read-recently-played user-top-read user-read-private",
+            scope:
+              "user-read-recently-played user-top-read user-read-private user-read-email",
             // Explicitly set the redirect_uri to the static production URL
             redirect_uri: staticCallbackUrl,
           },
