@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import logo from "public/replay_radar_logo.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProfileButton from "./ProfileButton";
 
 const navLinks = [
@@ -19,6 +19,13 @@ const navLinks = [
 const TopNav = () => {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const isDev = process.env.NODE_ENV === "development";
+    const secureFlag = isDev ? "" : " Secure;";
+    document.cookie = `user_timezone=${tz}; path=/;${secureFlag} SameSite=Lax`;
+  }, []);
 
   return (
     <>
