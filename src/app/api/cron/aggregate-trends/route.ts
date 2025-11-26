@@ -271,7 +271,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("Error aggregating trends:", error);
     return NextResponse.json(
-      { success: false, error: "Internal Server Error" },
+      { success: false, error: `Error aggregating trends: ${error}` },
       { status: 500 }
     );
   }
