@@ -25,6 +25,11 @@ jobs:
           echo "Response body: $BODY"
           echo "HTTP status: $STATUS"
 
+          if echo "$BODY" | jq -e . >/dev/null 2>&1; then
+            MESSAGE=$(echo "$BODY" | jq -r '.message // .error // empty')
+            echo "Cron Result: $MESSAGE"
+          fi
+
           if [ "$STATUS" -ge 400 ]; then
             echo "fetch-plays route failed"
             exit 1
@@ -43,7 +48,35 @@ jobs:
           echo "Response body: $BODY"
           echo "HTTP status: $STATUS"
 
+          if echo "$BODY" | jq -e . >/dev/null 2>&1; then
+            MESSAGE=$(echo "$BODY" | jq -r '.message // .error // empty')
+            echo "Cron Result: $MESSAGE"
+          fi
+
           if [ "$STATUS" -ge 400 ]; then
             echo "aggregate-plays route failed"
+            exit 1
+          fi
+
+      - name: Call aggregate-trends route and fail on error
+        run: |
+          echo "Calling aggregate-trends..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "https://replay-radar.vercel.app/api/cron/aggregate-trends")
+
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          STATUS=$(echo "$RESPONSE" | tail -n1)
+
+          echo "Response body: $BODY"
+          echo "HTTP status: $STATUS"
+
+          if echo "$BODY" | jq -e . >/dev/null 2>&1; then
+            MESSAGE=$(echo "$BODY" | jq -r '.message // .error // empty')
+            echo "Cron Result: $MESSAGE"
+          fi
+
+          if [ "$STATUS" -ge 400 ]; then
+            echo "aggregate-trends route failed"
             exit 1
           fi
