@@ -1,8 +1,11 @@
 "use server";
 import { Loading } from "@/components";
+import DemoModeButton from "@/components/DemoModeButton";
+import { getServerAuthData } from "@/lib/serverAuth";
 import { Suspense } from "react";
 
 export default async function About() {
+  const { isAuthenticated } = await getServerAuthData();
   return (
     <Suspense fallback={<Loading size='2xl' />}>
       <div className='flex flex-col items-center justify-center min-h-screen bg-secondary text-foreground px-4 rounded-lg shadow-lg'>
@@ -16,6 +19,10 @@ export default async function About() {
             trends from Spotify. Discover your musical identity across time.
           </p>
         </section>
+
+        {!isAuthenticated && (
+          <DemoModeButton className='h-18 w-3/4 md:w-1/2 md:text-2xl' />
+        )}
 
         {/* Features Section */}
         <section className='grid grid-cols-1 sm:grid-cols-3 gap-6 my-12 max-w-4xl w-full'>
