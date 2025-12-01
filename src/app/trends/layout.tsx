@@ -108,7 +108,7 @@ export default function TrendsLayout({
         </div>
 
         {/* Toggle Button */}
-        {!isMobile && (
+        {isMobile && (
           <div className='flex p-4 border-t border-sidebar-border justify-end w-full'>
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
