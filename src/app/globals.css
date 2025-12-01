@@ -5,53 +5,39 @@
    CSS Variables
 ---------------------- */
 :root {
-  /* Primary Colors - Spotify Green */
-  --color-primary: #1db954;
-  --color-primary-dark: #1aa34a;
-  --color-primary-light: #1ed760;
-
-  /* Backgrounds / Neutrals - Light Mode */
-  --background: #f0f0f0;
-  --foreground: #111827; /* gray-900 */
-  --card: #ffffff;
-  --card-foreground: #111827;
-  --popover: #ffffff;
-  --popover-foreground: #111827;
-  --primary: #1db954; /* Spotify green */
-  --primary-foreground: #ffffff;
-  --secondary: #f3f4f6; /* gray-100 */
-  --secondary-foreground: #111827;
-  --muted: #f3f4f6; /* gray-100 */
-  --muted-foreground: #6b7280; /* gray-500 */
-
-  /* Accents */
-  --accent: #7f7f7f; /* gray-500 for hover states */
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444; /* red-500 */
-  --destructive-foreground: #ffffff;
-  --border: #e5e7eb; /* gray-200 */
-  --input: #e5e7eb;
-  --ring: #1db954;
-
-  /* Chart Colors */
-  --chart-1: #1db954;
-  --chart-2: #1ed760;
-  --chart-3: #f03e8c;
-  --chart-4: #ffc83d;
-  --chart-5: #1db2f2;
-
-  /* Sidebar */
-  --sidebar: #ffffff;
-  --sidebar-foreground: #111827;
-  --sidebar-primary: #1db954;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f3f4f6;
-  --sidebar-accent-foreground: #111827;
-  --sidebar-border: #e5e7eb;
-  --sidebar-ring: #1db954;
-
-  /* Border radius */
-  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.72 0.205 148.5);
+  --primary-foreground: oklch(0.145 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.72 0.205 148.5);
+  --accent-foreground: oklch(0.145 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.72 0.205 148.5);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.72 0.205 148.5);
+  --sidebar-primary-foreground: oklch(0.145 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 /* ----------------------
@@ -59,35 +45,38 @@
 ---------------------- */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #000000; /* Black */
-    --foreground: #ffffff; /* White */
-    --card: #1a1a1a; /* gray-900 equivalent */
-    --card-foreground: #ffffff;
-    --popover: #1a1a1a;
-    --popover-foreground: #ffffff;
-    --primary: #1db954; /* Spotify green */
-    --primary-foreground: #ffffff;
-    --secondary: #1f1f1f; /* gray-800 for subtle backgrounds */
-    --secondary-foreground: #ffffff;
-    --muted: #1f1f1f; /* gray-800 */
-    --muted-foreground: #9ca3af; /* gray-400 */
-    --accent: #a7adb9; /* green-600 for hover states */
-    --accent-foreground: #ffffff;
-    --destructive: #ef4444; /* red-500 */
-    --destructive-foreground: #ffffff;
-    --border: #1f1f1f; /* gray-800 */
-    --input: #1f1f1f;
-    --ring: #1db954;
-
-    /* Sidebar */
-    --sidebar: #1a1a1a;
-    --sidebar-foreground: #ffffff;
-    --sidebar-primary: #16a34a;
-    --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #1f1f1f;
-    --sidebar-accent-foreground: #d1d5db;
-    --sidebar-border: #1f1f1f;
-    --sidebar-ring: #1db954;
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.18 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.18 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.72 0.205 148.5);
+    --primary-foreground: oklch(0.145 0 0);
+    --secondary: oklch(0.22 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.22 0 0);
+    --muted-foreground: oklch(0.6 0 0);
+    --accent: oklch(0.72 0.205 148.5);
+    --accent-foreground: oklch(0.145 0 0);
+    --destructive: oklch(0.396 0.141 25.723);
+    --destructive-foreground: oklch(0.637 0.237 25.331);
+    --border: oklch(0.25 0 0);
+    --input: oklch(0.25 0 0);
+    --ring: oklch(0.72 0.205 148.5);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+    --sidebar: oklch(0.12 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.72 0.205 148.5);
+    --sidebar-primary-foreground: oklch(0.145 0 0);
+    --sidebar-accent: oklch(0.22 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(0.25 0 0);
+    --sidebar-ring: oklch(0.439 0 0);
   }
 }
 
