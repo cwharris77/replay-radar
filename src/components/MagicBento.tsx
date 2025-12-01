@@ -28,37 +28,37 @@ export interface BentoProps {
 
 const defaultCardData: BentoCardProps[] = [
   {
-    color: "#060010",
+    color: "var(--card)",
     title: "Analytics",
     description: "Track user behavior",
     label: "Insights",
   },
   {
-    color: "#060010",
+    color: "var(--card)",
     title: "Dashboard",
     description: "Centralized data view",
     label: "Overview",
   },
   {
-    color: "#060010",
+    color: "var(--card)",
     title: "",
     description: "Your top artist",
     label: "Top Artist",
   },
   {
-    color: "#060010",
+    color: "var(--card)",
     title: "Automation",
     description: "Streamline workflows",
     label: "Efficiency",
   },
   {
-    color: "#060010",
+    color: "var(--card)",
     title: "Integration",
     description: "Connect favorite tools",
     label: "Connectivity",
   },
   {
-    color: "#060010",
+    color: "var(--card)",
     title: "Security",
     description: "Enterprise-grade protection",
     label: "Protection",
@@ -67,8 +67,25 @@ const defaultCardData: BentoCardProps[] = [
 
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
-const DEFAULT_GLOW_COLOR = "132, 0, 255";
+const DEFAULT_GLOW_COLOR = "132, 255, 71"; // Fallback RGB value
 const MOBILE_BREAKPOINT = 768;
+
+/**
+ * Helper function to get CSS variable value from the document root
+ * @param variableName - The CSS variable name (e.g., '--primary-rgb')
+ * @param fallback - Fallback value if the CSS variable is not found
+ * @returns The CSS variable value or fallback
+ */
+const getCSSVariable = (
+  variableName: string,
+  fallback: string = ""
+): string => {
+  if (typeof window === "undefined") return fallback;
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue(variableName)
+    .trim();
+  return value || fallback;
+};
 
 const createParticleElement = (
   x: number,
@@ -575,6 +592,24 @@ const MagicBento: React.FC<BentoProps> = ({
   const isMobile = useMobileDetection();
   const shouldDisableAnimations = disableAnimations || isMobile;
 
+  // Resolve CSS variable if glowColor is a CSS variable reference
+  const [resolvedGlowColor, setResolvedGlowColor] = useState(glowColor);
+
+  useEffect(() => {
+    // Check if glowColor is a CSS variable (starts with 'var(')
+    if (glowColor.startsWith("var(")) {
+      // Extract variable name from var(--variable-name)
+      const match = glowColor.match(/var\((--[\w-]+)\)/);
+      if (match) {
+        const variableName = match[1];
+        const resolved = getCSSVariable(variableName, DEFAULT_GLOW_COLOR);
+        setResolvedGlowColor(resolved);
+      }
+    } else {
+      setResolvedGlowColor(glowColor);
+    }
+  }, [glowColor]);
+
   return (
     <>
       <style>
@@ -584,7 +619,7 @@ const MagicBento: React.FC<BentoProps> = ({
             --glow-y: 50%;
             --glow-intensity: 0;
             --glow-radius: 200px;
-            --glow-color: ${glowColor};
+            --glow-color: ${resolvedGlowColor};
             --border-color: #392e4e;
             --background-dark: #060010;
             --white: hsl(0, 0%, 100%);
@@ -633,8 +668,8 @@ const MagicBento: React.FC<BentoProps> = ({
             inset: 0;
             padding: 6px;
             background: radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y),
-                rgba(${glowColor}, calc(var(--glow-intensity) * 0.8)) 0%,
-                rgba(${glowColor}, calc(var(--glow-intensity) * 0.4)) 30%,
+                rgba(${resolvedGlowColor}, calc(var(--glow-intensity) * 0.8)) 0%,
+                rgba(${resolvedGlowColor}, calc(var(--glow-intensity) * 0.4)) 30%,
                 transparent 60%);
             border-radius: inherit;
             mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -651,7 +686,7 @@ const MagicBento: React.FC<BentoProps> = ({
           }
           
           .card--border-glow:hover {
-            box-shadow: 0 4px 20px rgba(46, 24, 78, 0.4), 0 0 30px rgba(${glowColor}, 0.2);
+            box-shadow: 0 4px 20px rgba(46, 24, 78, 0.4), 0 0 30px rgba(${resolvedGlowColor}, 0.2);
           }
           
           .particle::before {
@@ -661,13 +696,13 @@ const MagicBento: React.FC<BentoProps> = ({
             left: -2px;
             right: -2px;
             bottom: -2px;
-            background: rgba(${glowColor}, 0.2);
+            background: rgba(${resolvedGlowColor}, 0.2);
             border-radius: 50%;
             z-index: -1;
           }
           
           .particle-container:hover {
-            box-shadow: 0 4px 20px rgba(46, 24, 78, 0.2), 0 0 30px rgba(${glowColor}, 0.2);
+            box-shadow: 0 4px 20px rgba(46, 24, 78, 0.2), 0 0 30px rgba(${resolvedGlowColor}, 0.2);
           }
           
           .text-clamp-1 {
@@ -710,7 +745,7 @@ const MagicBento: React.FC<BentoProps> = ({
           disableAnimations={shouldDisableAnimations}
           enabled={enableSpotlight}
           spotlightRadius={spotlightRadius}
-          glowColor={glowColor}
+          glowColor={resolvedGlowColor}
         />
       )}
 
@@ -724,7 +759,7 @@ const MagicBento: React.FC<BentoProps> = ({
             const cardStyle = {
               backgroundColor: card.color || "var(--background-dark)",
               borderColor: "var(--border-color)",
-              color: "var(--white)",
+              color: "var(--card-foreground)",
               "--glow-x": "50%",
               "--glow-y": "50%",
               "--glow-intensity": "0",
@@ -739,15 +774,15 @@ const MagicBento: React.FC<BentoProps> = ({
                   style={cardStyle}
                   disableAnimations={shouldDisableAnimations}
                   particleCount={particleCount}
-                  glowColor={glowColor}
+                  glowColor={resolvedGlowColor}
                   enableTilt={enableTilt}
                   clickEffect={clickEffect}
                   enableMagnetism={enableMagnetism}
                 >
-                  <div className='card__header flex justify-between gap-3 relative text-white'>
+                  <div className='card__header flex justify-between gap-3 relative'>
                     <span className='card__label text-base'>{card.label}</span>
                   </div>
-                  <div className='card__content flex flex-col relative text-white'>
+                  <div className='card__content flex flex-col relative'>
                     <h3
                       className={`card__title font-normal text-lg m-0 mb-4 whitespace-pre-line ${
                         textAutoHide ? "text-clamp-1" : ""
@@ -852,7 +887,7 @@ const MagicBento: React.FC<BentoProps> = ({
                       width: ${maxDistance * 2}px;
                       height: ${maxDistance * 2}px;
                       border-radius: 50%;
-                      background: radial-gradient(circle, rgba(${glowColor}, 0.4) 0%, rgba(${glowColor}, 0.2) 30%, transparent 70%);
+                      background: radial-gradient(circle, rgba(${resolvedGlowColor}, 0.4) 0%, rgba(${resolvedGlowColor}, 0.2) 30%, transparent 70%);
                       left: ${x - maxDistance}px;
                       top: ${y - maxDistance}px;
                       pointer-events: none;
@@ -882,10 +917,10 @@ const MagicBento: React.FC<BentoProps> = ({
                   el.addEventListener("click", handleClick);
                 }}
               >
-                <div className='card__header flex justify-between gap-3 relative text-white'>
+                <div className='card__header flex justify-between gap-3 relative'>
                   <span className='card__label text-base'>{card.label}</span>
                 </div>
-                <div className='card__content flex flex-col relative text-white'>
+                <div className='card__content flex flex-col relative'>
                   <h3
                     className={`card__title font-normal text-base m-0 mb-1 whitespace-pre-line ${
                       textAutoHide ? "text-clamp-1" : ""
