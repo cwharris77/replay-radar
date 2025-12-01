@@ -15,19 +15,19 @@ const generateCardData = (
   recentlyPlayed?: Track[]
 ): BentoCardProps[] => [
   {
-    color: "#060010",
+    color: "var(--card)",
     title: topTracks[0]?.name || "No tracks yet",
     description: `Artist: ${topTracks[0]?.artists[0]?.name || "Unknown"}`,
     label: "Top Track",
   },
   {
-    color: "#060010",
+    color: "var(--card)",
     title: topArtist.name,
     description: "Your most played artist",
     label: "Top Artist",
   },
   {
-    color: "#060010",
+    color: "var(--card)",
     title:
       topTracks
         .slice(1, 3)
@@ -40,7 +40,7 @@ const generateCardData = (
     label: "Top Tracks",
   },
   {
-    color: "#060010",
+    color: "var(--card)",
     title:
       recentlyPlayed
         ?.slice(0, 3)
@@ -53,13 +53,13 @@ const generateCardData = (
     label: "History",
   },
   {
-    color: "#060010",
+    color: "var(--card)",
     title: `${totalMinutes.toLocaleString()} minutes`,
     description: "Listening Time Today",
     label: "Stats",
   },
   {
-    color: "#060010",
+    color: "var(--card)",
     title: "Top Genres",
     description: "Explore your music taste",
     label: "Genres",
@@ -83,7 +83,7 @@ export default function DashboardSummary({
       clickEffect={true}
       spotlightRadius={300}
       particleCount={12}
-      glowColor='var(--color-primary-rgb)'
+      glowColor='var(--primary-rgb)'
       cardData={generateCardData(
         topArtist,
         topTracks,

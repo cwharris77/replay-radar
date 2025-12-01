@@ -71,7 +71,7 @@ export default function FilterDropdown({
             id={`decade-${"All"}`}
             checked={selectedDecades.length === decades.length - 1}
             onCheckedChange={() => toggleDecade("All")}
-            className='h-5 w-5 hover:border-primary dark:bg-accent/40'
+            className='h-5 w-5 hover:border-primary'
           />
         </div>
         <div className='flex flex-wrap gap-2'>
@@ -83,7 +83,7 @@ export default function FilterDropdown({
                   id={`decade-${decade}`}
                   checked={selectedDecades.includes(decade)}
                   onCheckedChange={() => toggleDecade(decade)}
-                  className='h-5 w-5 hover:border-primary dark:bg-accent/40'
+                  className='h-5 w-5 hover:border-primary'
                 />
                 <Label htmlFor={`decade-${decade}`}>{decade}</Label>
               </div>

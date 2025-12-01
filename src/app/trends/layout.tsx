@@ -57,17 +57,13 @@ export default function TrendsLayout({
           "bg-sidebar border-r border-sidebar-border fixed top-navbar-sm md:top-navbar-md lg:top-navbar-lg bottom-0 z-45 transition-all duration-300 flex flex-col justify-center items-center translate-x-0"
         )}
       >
-        <div className='p-6 pt-8 flex-1 w-full'>
-          <h2
+        <div className='p-6 flex-1 w-full'>
+          <nav
             className={cn(
-              "text-xl font-semibold text-sidebar-foreground mb-6 transition-all duration-300 h-7 overflow-hidden whitespace-nowrap",
-              isCollapsed ? "opacity-0 w-0" : "opacity-100 delay-100"
+              "flex flex-col gap-2 rounded-xl justify-center bg-card",
+              isCollapsed ? "p-0 bg-transparent" : "p-6"
             )}
           >
-            Trends
-          </h2>
-
-          <nav className='flex flex-col gap-2'>
             {sidebarLinks.map((link) => {
               const active = pathname === link.href;
               const Icon = link.icon;
@@ -96,22 +92,14 @@ export default function TrendsLayout({
                       isCollapsed ? "w-6 h-6" : "w-5 h-5"
                     )}
                   />
-                  <span
-                    className={cn(
-                      "whitespace-nowrap transition-all duration-300 overflow-hidden",
-                      isCollapsed
-                        ? "w-0 opacity-0"
-                        : "w-auto opacity-100 delay-100"
-                    )}
-                  >
-                    {link.label}
-                  </span>
-
-                  {/* Tooltip for collapsed state */}
-                  {isCollapsed && (
-                    <div className='absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 shadow-md border border-border transition-opacity'>
+                  {!isCollapsed && (
+                    <span
+                      className={cn(
+                        "whitespace-nowrap transition-all duration-300 overflow-hidden w-auto opacity-100 delay-100"
+                      )}
+                    >
                       {link.label}
-                    </div>
+                    </span>
                   )}
                 </Link>
               );
@@ -120,14 +108,14 @@ export default function TrendsLayout({
         </div>
 
         {/* Toggle Button */}
-        <div className='flex p-4 border-t border-sidebar-border justify-end w-full'>
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className='p-2 rounded-lg hover:bg-sidebar-accent text-sidebar-accent-foreground transition-colors'
-            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {isMobile ? (
-              isCollapsed ? (
+        {!isMobile && (
+          <div className='flex p-4 border-t border-sidebar-border justify-end w-full'>
+            <button
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className='p-2 rounded-lg hover:bg-sidebar-accent text-sidebar-accent-foreground transition-colors'
+              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {isCollapsed ? (
                 <div className='w-10 h-10 rounded-full flex items-center justify-center outline outline-primary'>
                   <ChevronRight className='w-5 h-5' />
                 </div>
@@ -135,10 +123,10 @@ export default function TrendsLayout({
                 <div className='w-10 h-10 rounded-full flex items-center justify-center outline outline-primary'>
                   <ChevronLeft className='w-5 h-5' />
                 </div>
-              )
-            ) : null}
-          </button>
-        </div>
+              )}
+            </button>
+          </div>
+        )}
       </aside>
 
       {/* Page Content */}
