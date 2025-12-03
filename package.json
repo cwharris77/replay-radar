@@ -31,7 +31,7 @@
     "mongodb": "^6.20.0",
     "motion": "^12.23.24",
     "next": "^16.0.7",
-    "next-auth": "^4.24.11",
+    "next-auth": "^4.24.13",
     "node-fetch": "^3.3.2",
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.1",
