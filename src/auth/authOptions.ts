@@ -26,7 +26,91 @@ export function createAuthOptions(): NextAuthOptions {
   const productionBaseUrl = getProductionBaseUrl();
   const staticCallbackUrl = `${productionBaseUrl}/api/auth/callback/spotify`;
 
+  // Determine if we should use secure cookies
+  // In development, allow insecure cookies; in production, require secure
+  const useSecureCookies =
+    process.env.NODE_ENV === "production" ||
+    productionBaseUrl.startsWith("https");
+
   return {
+    useSecureCookies,
+    session: {
+      strategy: "jwt",
+    },
+    cookies: {
+      sessionToken: {
+        name:
+          process.env.NODE_ENV === "production"
+            ? "__Secure-next-auth.session-token"
+            : "next-auth.session-token",
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: useSecureCookies,
+        },
+      },
+      callbackUrl: {
+        name:
+          process.env.NODE_ENV === "production"
+            ? "__Secure-next-auth.callback-url"
+            : "next-auth.callback-url",
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: useSecureCookies,
+        },
+      },
+      csrfToken: {
+        name:
+          process.env.NODE_ENV === "production"
+            ? "__Secure-next-auth.csrf-token"
+            : "next-auth.csrf-token",
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: useSecureCookies,
+        },
+      },
+      pkceCodeVerifier: {
+        name:
+          process.env.NODE_ENV === "production"
+            ? "__Secure-next-auth.pkce.code_verifier"
+            : "next-auth.pkce.code_verifier",
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: useSecureCookies,
+        },
+      },
+      state: {
+        name:
+          process.env.NODE_ENV === "production"
+            ? "__Secure-next-auth.state"
+            : "next-auth.state",
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: useSecureCookies,
+        },
+      },
+      nonce: {
+        name:
+          process.env.NODE_ENV === "production"
+            ? "__Secure-next-auth.nonce"
+            : "next-auth.nonce",
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: useSecureCookies,
+        },
+      },
+    },
     providers: [
       SpotifyProvider({
         clientId: process.env.SPOTIFY_CLIENT_ID!,
@@ -63,6 +147,7 @@ export function createAuthOptions(): NextAuthOptions {
     pages: {
       signIn: "/login",
     },
+    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
       async jwt({ token, account, profile }) {
         // Initial sign-in
