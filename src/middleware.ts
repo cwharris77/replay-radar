@@ -34,7 +34,7 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/api/((?!auth|cron).*)",
+    "/api/admin/:path*",
     "/admin/:path*",
     "/trends/:path*",
     "/dashboard/:path*",
